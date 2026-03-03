@@ -19,6 +19,7 @@ export default function CanvasSequence() {
     useEffect(() => {
         let loadedCount = 0;
         const frames: HTMLImageElement[] = [];
+        const startTime = Date.now();
 
         for (let i = 0; i < FRAME_COUNT; i++) {
             const img = new Image();
@@ -28,7 +29,11 @@ export default function CanvasSequence() {
                 loadedCount++;
                 setLoadingProgress((loadedCount / FRAME_COUNT) * 100);
                 if (loadedCount === FRAME_COUNT) {
-                    setLoaded(true);
+                    const elapsed = Date.now() - startTime;
+                    const remainingTime = Math.max(0, 3500 - elapsed);
+                    setTimeout(() => {
+                        setLoaded(true);
+                    }, remainingTime);
                 }
             };
             frames.push(img);
@@ -211,7 +216,7 @@ export default function CanvasSequence() {
                     <div className="text-xl">INITIALIZING NEURAL LINK...</div>
                     <div className="w-64 h-1 bg-[#050508] border border-[#00BFFF]/30 rounded overflow-hidden">
                         <div
-                            className="h-full bg-[#FF4500] shadow-[0_0_10px_#FF4500]"
+                            className="h-full bg-[#FF4500] shadow-[0_0_10px_#FF4500] transition-all duration-[3000ms] ease-out"
                             style={{ width: `${loadingProgress}%` }}
                         />
                     </div>
