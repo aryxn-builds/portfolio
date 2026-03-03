@@ -3,6 +3,7 @@
 import CanvasSequence from "@/components/CanvasSequence";
 import NeuralClusters from "@/components/NeuralClusters";
 import RadialOrbitalTimeline from "@/components/RadialOrbitalTimeline";
+import MorphingCardStack from "@/components/MorphingCardStack";
 import { motion } from "framer-motion";
 import { Github, Linkedin, Mail, ExternalLink, Activity } from "lucide-react";
 import { useState } from "react";
@@ -109,50 +110,8 @@ export default function Home() {
             DEPLOYED <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00BFFF] to-[#FF4500]">MODELS.</span>
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 max-w-6xl mx-auto">
-            {/* Project 1 */}
-            <motion.div
-              whileHover={{ y: -10, scale: 1.02 }}
-              className="group relative bg-[#0a0a0f] border border-white/5 rounded-2xl p-8 overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#00BFFF]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#00BFFF]/20 blur-[100px] rounded-full group-hover:bg-[#FF4500]/20 transition-colors" />
-
-              <h3 className="text-2xl font-bold font-display mb-2 relative z-10">Vision Transformer (ViT) Explorer</h3>
-              <p className="text-gray-400 mb-6 font-light relative z-10">Real-time object detection and segmentation pipeline utilizing optimized Vision Transformers.</p>
-
-              <div className="flex gap-2 mb-8 relative z-10">
-                {['PyTorch', 'OpenCV', 'React'].map(tag => (
-                  <span key={tag} className="text-xs font-mono px-2 py-1 rounded bg-white/5 border border-white/10">{tag}</span>
-                ))}
-              </div>
-
-              <a href="#" className="inline-flex items-center gap-2 text-sm font-mono text-[#00BFFF] hover:text-[#FF4500] transition-colors relative z-10">
-                [ ACCESS REPOSITORY ] <ExternalLink size={14} />
-              </a>
-            </motion.div>
-
-            {/* Project 2 */}
-            <motion.div
-              whileHover={{ y: -10, scale: 1.02 }}
-              className="group relative bg-[#0a0a0f] border border-white/5 rounded-2xl p-8 overflow-hidden mt-0 md:mt-16"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#FF4500]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#FF4500]/20 blur-[100px] rounded-full group-hover:bg-[#00BFFF]/20 transition-colors" />
-
-              <h3 className="text-2xl font-bold font-display mb-2 relative z-10">Neural Voice Synthesizer</h3>
-              <p className="text-gray-400 mb-6 font-light relative z-10">Zero-shot voice cloning capabilities leveraging autoregressive transformers and diffusion models.</p>
-
-              <div className="flex gap-2 mb-8 relative z-10">
-                {['FastAPI', 'CUDA', 'Python'].map(tag => (
-                  <span key={tag} className="text-xs font-mono px-2 py-1 rounded bg-white/5 border border-white/10">{tag}</span>
-                ))}
-              </div>
-
-              <a href="#" className="inline-flex items-center gap-2 text-sm font-mono text-[#FF4500] hover:text-[#00BFFF] transition-colors relative z-10">
-                [ ACCESS REPOSITORY ] <ExternalLink size={14} />
-              </a>
-            </motion.div>
+          <div className="relative z-10 w-full mt-4">
+            <MorphingCardStack />
           </div>
         </section>
 
