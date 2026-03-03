@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Briefcase, Github, Linkedin, Mail, Rocket, X } from 'lucide-react';
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { Tilt } from "./ui/tilt";
+import { Spotlight } from "./ui/spotlight";
 
 function cn(...inputs: (string | undefined | null | false)[]) {
     return twMerge(clsx(inputs));
@@ -393,9 +395,8 @@ export default function RadialOrbitalTimeline({ className, onNodeStateChange }: 
                         exit={{ opacity: 0, scale: 0.8 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
                         className={cn(
-                            "absolute p-6 rounded-2xl z-40 backdrop-blur-xl border border-[rgba(255,100,0,0.3)] shadow-[0_0_30px_rgba(255,69,0,0.2),0_0_30px_rgba(0,191,255,0.1)]",
-                            "bg-[rgba(5,5,8,0.92)]", // Card background
-                            "max-md:!fixed max-md:!bottom-8 max-md:!top-auto max-md:!left-1/2 max-md:!-translate-x-1/2 max-md:w-[calc(100vw-32px)] max-md:max-w-sm" // Mobile fixed positioning
+                            "absolute z-40",
+                            "max-md:!fixed max-md:!bottom-8 max-md:!top-auto max-md:!left-1/2 max-md:!-translate-x-1/2 max-md:w-[calc(100vw-32px)] max-md:max-w-sm"
                         )}
                         style={viewportSize.w < 768 ? {} : {
                             width: '320px',
@@ -403,64 +404,81 @@ export default function RadialOrbitalTimeline({ className, onNodeStateChange }: 
                             left: `${expandedNodePos.left}px`
                         }}
                     >
-                        <button
-                            onClick={(e) => { e.stopPropagation(); setExpandedNodeId(null); }}
-                            className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
-                        >
-                            <X size={16} />
-                        </button>
-
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="p-2 rounded-lg bg-white/5 border border-white/10">
-                                <expandedNode.icon size={20} className="text-[#00BFFF]" />
-                            </div>
-                            <div>
-                                <h4 className="font-display font-bold text-xl text-white tracking-wide">{expandedNode.title}</h4>
-                                <span className="font-mono text-xs text-[#FF4500] uppercase tracking-wider">{expandedNode.category} &middot; {expandedNode.date}</span>
-                            </div>
-                        </div>
-
-                        <p className="text-sm text-gray-300 mb-6 leading-relaxed font-light">
-                            {expandedNode.content}
-                        </p>
-
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between text-xs font-mono">
-                                <span className="text-gray-400">STATUS</span>
-                                <span className={cn("px-2 py-0.5 rounded uppercase text-[10px] font-bold tracking-wider", getStatusColor(expandedNode.status))}>
-                                    {expandedNode.status.replace('-', ' ')}
-                                </span>
-                            </div>
-
-                            <div>
-                                <div className="flex justify-between text-xs font-mono mb-1 text-gray-400">
-                                    <span>ALIGNMENT</span>
-                                    <span>{expandedNode.energy}%</span>
-                                </div>
-                                <div className="h-1.5 w-full bg-gray-800 rounded-full overflow-hidden">
-                                    <motion.div
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${expandedNode.energy}%` }}
-                                        transition={{ duration: 1, delay: 0.2 }}
-                                        className="h-full bg-gradient-to-r from-[#FF4500] to-[#00BFFF] shadow-[0_0_10px_rgba(0,191,255,0.5)]"
-                                    />
-                                </div>
-                            </div>
-
-                            {expandedNode.actionUrl && (
-                                <motion.a
-                                    href={expandedNode.actionUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    className="w-full mt-4 flex items-center justify-center gap-2 py-2.5 rounded-lg border border-[#00BFFF]/50 bg-gradient-to-r from-[#00BFFF]/10 to-[#FF4500]/10 hover:from-[#00BFFF]/20 hover:to-[#FF4500]/20 text-white font-mono text-sm uppercase tracking-wider transition-all"
-                                >
-                                    <span>{expandedNode.actionText || "Explore"}</span>
-                                    <expandedNode.icon size={14} />
-                                </motion.a>
+                        <Tilt
+                            rotationFactor={6}
+                            isRevese={true}
+                            springOptions={{ stiffness: 26.7, damping: 4.1, mass: 0.2 }}
+                            className={cn(
+                                "relative w-full h-full p-6 rounded-2xl backdrop-blur-xl border border-[rgba(255,100,0,0.3)] shadow-[0_0_30px_rgba(255,69,0,0.2),0_0_30px_rgba(0,191,255,0.1)]",
+                                "bg-[rgba(5,5,8,0.92)]" // Card background
                             )}
-                        </div>
+                            style={{ transformOrigin: 'center center' }}
+                        >
+                            <Spotlight
+                                size={200}
+                                springOptions={{ stiffness: 26.7, damping: 4.1, mass: 0.2 }}
+                                className="z-10 from-[#00BFFF]/20 via-[#00BFFF]/5 to-transparent blur-2xl"
+                            />
+
+                            <button
+                                onClick={(e) => { e.stopPropagation(); setExpandedNodeId(null); }}
+                                className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors z-20"
+                            >
+                                <X size={16} />
+                            </button>
+
+                            <div className="flex items-center gap-3 mb-4 relative z-20 pointer-events-none">
+                                <div className="p-2 rounded-lg bg-white/5 border border-white/10">
+                                    <expandedNode.icon size={20} className="text-[#00BFFF]" />
+                                </div>
+                                <div>
+                                    <h4 className="font-display font-bold text-xl text-white tracking-wide">{expandedNode.title}</h4>
+                                    <span className="font-mono text-xs text-[#FF4500] uppercase tracking-wider">{expandedNode.category} &middot; {expandedNode.date}</span>
+                                </div>
+                            </div>
+
+                            <p className="text-sm text-gray-300 mb-6 leading-relaxed font-light relative z-20 pointer-events-none">
+                                {expandedNode.content}
+                            </p>
+
+                            <div className="space-y-4 relative z-20">
+                                <div className="flex items-center justify-between text-xs font-mono pointer-events-none">
+                                    <span className="text-gray-400">STATUS</span>
+                                    <span className={cn("px-2 py-0.5 rounded uppercase text-[10px] font-bold tracking-wider", getStatusColor(expandedNode.status))}>
+                                        {expandedNode.status.replace('-', ' ')}
+                                    </span>
+                                </div>
+
+                                <div className="pointer-events-none">
+                                    <div className="flex justify-between text-xs font-mono mb-1 text-gray-400">
+                                        <span>ALIGNMENT</span>
+                                        <span>{expandedNode.energy}%</span>
+                                    </div>
+                                    <div className="h-1.5 w-full bg-gray-800 rounded-full overflow-hidden">
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${expandedNode.energy}%` }}
+                                            transition={{ duration: 1, delay: 0.2 }}
+                                            className="h-full bg-gradient-to-r from-[#FF4500] to-[#00BFFF] shadow-[0_0_10px_rgba(0,191,255,0.5)]"
+                                        />
+                                    </div>
+                                </div>
+
+                                {expandedNode.actionUrl && (
+                                    <motion.a
+                                        href={expandedNode.actionUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        className="w-full mt-4 flex items-center justify-center gap-2 py-2.5 rounded-lg border border-[#00BFFF]/50 bg-gradient-to-r from-[#00BFFF]/10 to-[#FF4500]/10 hover:from-[#00BFFF]/20 hover:to-[#FF4500]/20 text-white font-mono text-sm uppercase tracking-wider transition-all pointer-events-auto"
+                                    >
+                                        <span>{expandedNode.actionText || "Explore"}</span>
+                                        <expandedNode.icon size={14} />
+                                    </motion.a>
+                                )}
+                            </div>
+                        </Tilt>
                     </motion.div>
                 )}
             </AnimatePresence>

@@ -6,6 +6,8 @@ import { Html } from "@react-three/drei";
 import * as THREE from "three";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import { Tilt } from "./ui/tilt";
+import { Spotlight } from "./ui/spotlight";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -172,14 +174,27 @@ function Node({
             {/* Tooltip */}
             {hovered === name && (
                 <Html center position={[0, isCore ? 1.1 : 0.75, 0]} zIndexRange={[100, 0]}>
-                    <div style={{
-                        background: "rgba(5,5,8,0.85)",
-                        border: `1px solid ${color}60`,
-                        boxShadow: `0 0 18px ${color}50`,
-                        borderRadius: 10, padding: "8px 14px",
-                        minWidth: 140, textAlign: "center",
-                        pointerEvents: "none", backdropFilter: "blur(10px)"
-                    }}>
+                    <Tilt
+                        rotationFactor={5}
+                        isRevese={true}
+                        springOptions={{ stiffness: 26.7, damping: 4.1, mass: 0.2 }}
+                        style={{
+                            position: "relative",
+                            background: "rgba(5,5,8,0.85)",
+                            border: `1px solid ${color}60`,
+                            boxShadow: `0 0 18px ${color}50`,
+                            borderRadius: 10, padding: "8px 14px",
+                            minWidth: 140, textAlign: "center",
+                            pointerEvents: "none", backdropFilter: "blur(10px)",
+                            transformOrigin: 'center center'
+                        }}
+                    >
+                        <Spotlight
+                            size={180}
+                            springOptions={{ stiffness: 26.7, damping: 4.1, mass: 0.2 }}
+                            className="z-10"
+                            style={{ background: `radial-gradient(circle, ${color}30 0%, ${color}10 30%, transparent 70%)` }}
+                        />
                         <p style={{ color: "#fff", fontFamily: "monospace", fontSize: 13, fontWeight: 700, letterSpacing: 2, margin: 0 }}>
                             {name.toUpperCase()}
                         </p>
@@ -187,7 +202,7 @@ function Node({
                         <p style={{ color: "#aaa", fontFamily: "monospace", fontSize: 10, margin: 0 }}>
                             {clusterLabel} Stack
                         </p>
-                    </div>
+                    </Tilt>
                 </Html>
             )}
 
@@ -358,11 +373,24 @@ function MobileSkills() {
     return (
         <div className="flex flex-col gap-5 py-8 px-4">
             {CLUSTERS.map(c => (
-                <div key={c.id} className="relative rounded-2xl overflow-hidden border border-white/10 bg-black/40 backdrop-blur p-5">
+                <Tilt
+                    key={c.id}
+                    rotationFactor={5}
+                    isRevese={true}
+                    springOptions={{ stiffness: 26.7, damping: 4.1, mass: 0.2 }}
+                    className="relative rounded-2xl overflow-hidden border border-white/10 bg-black/40 backdrop-blur p-5"
+                    style={{ transformOrigin: 'center center' }}
+                >
+                    <Spotlight
+                        size={180}
+                        springOptions={{ stiffness: 26.7, damping: 4.1, mass: 0.2 }}
+                        className="z-10"
+                        style={{ background: `radial-gradient(circle, ${c.color}25 0%, ${c.color}15 30%, transparent 70%)` }}
+                    />
                     <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(circle at 80% 20%, ${c.color}20 0%, transparent 60%)` }} />
-                    <h3 className="font-mono text-lg font-bold mb-1" style={{ color: c.color }}>{c.coreName}</h3>
-                    <p className="text-white/50 text-xs mb-3">{c.desc}</p>
-                    <div className="flex flex-wrap gap-2">
+                    <h3 className="relative z-20 font-mono text-lg font-bold mb-1 pointer-events-none" style={{ color: c.color }}>{c.coreName}</h3>
+                    <p className="relative z-20 text-white/50 text-xs mb-3 pointer-events-none">{c.desc}</p>
+                    <div className="relative z-20 flex flex-wrap gap-2 pointer-events-none">
                         {c.children.map(s => (
                             <span key={s} className="text-xs font-mono px-3 py-1 rounded-full border"
                                 style={{ color: c.color, borderColor: `${c.color}50`, background: `${c.color}10` }}>
@@ -370,7 +398,7 @@ function MobileSkills() {
                             </span>
                         ))}
                     </div>
-                </div>
+                </Tilt>
             ))}
         </div>
     );
