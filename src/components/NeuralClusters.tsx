@@ -352,7 +352,29 @@ function Scene({ visible }: { visible: boolean }) {
     );
 }
 
+// ─── MOBILE FALLBACK ──────────────────────────────────────────────────────────
 
+function MobileSkills() {
+    return (
+        <div className="flex flex-col gap-5 py-8 px-4">
+            {CLUSTERS.map(c => (
+                <div key={c.id} className="relative rounded-2xl overflow-hidden border border-white/10 bg-black/40 backdrop-blur p-5">
+                    <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(circle at 80% 20%, ${c.color}20 0%, transparent 60%)` }} />
+                    <h3 className="font-mono text-lg font-bold mb-1" style={{ color: c.color }}>{c.coreName}</h3>
+                    <p className="text-white/50 text-xs mb-3">{c.desc}</p>
+                    <div className="flex flex-wrap gap-2">
+                        {c.children.map(s => (
+                            <span key={s} className="text-xs font-mono px-3 py-1 rounded-full border"
+                                style={{ color: c.color, borderColor: `${c.color}50`, background: `${c.color}10` }}>
+                                {s}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+}
 
 // ─── MAIN EXPORT ──────────────────────────────────────────────────────────────
 
@@ -378,20 +400,26 @@ export default function NeuralClusters() {
     }, []);
 
     return (
-        <div ref={sectionRef} className="w-full min-h-[60vh] md:min-h-0 h-full relative">
-            {/* gl alpha:true makes the WebGL canvas background fully transparent */}
-            <Canvas
-                camera={{ position: [0, 0, mobile ? 32 : 15], fov: 45 }}
-                gl={{ alpha: true, antialias: true }}
-                style={{ background: "transparent" }}
-            >
-                <Scene visible={visible} />
-            </Canvas>
-            <div className="absolute top-6 left-6 text-white/40 text-[11px] font-mono pointer-events-none space-y-1 z-20">
-                <p>[ HOVER ] Node insights</p>
-                <p>[ CLICK ] Isolate cluster</p>
-                <p>[ BG ] Reset view</p>
-            </div>
+        <div ref={sectionRef} className="w-full h-full relative">
+            {mobile ? (
+                <MobileSkills />
+            ) : (
+                <>
+                    {/* gl alpha:true makes the WebGL canvas background fully transparent */}
+                    <Canvas
+                        camera={{ position: [0, 0, 15], fov: 45 }}
+                        gl={{ alpha: true, antialias: true }}
+                        style={{ background: "transparent" }}
+                    >
+                        <Scene visible={visible} />
+                    </Canvas>
+                    <div className="absolute top-6 left-6 text-white/40 text-[11px] font-mono pointer-events-none space-y-1 z-20">
+                        <p>[ HOVER ] Node insights</p>
+                        <p>[ CLICK ] Isolate cluster</p>
+                        <p>[ BG ] Reset view</p>
+                    </div>
+                </>
+            )}
         </div>
     );
 }
