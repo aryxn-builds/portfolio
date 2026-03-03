@@ -1,34 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Aryan Yadav - Scrollytelling Portfolio
+
+A high-performance, immersive 3D/Canvas scrollytelling personal portfolio built with Next.js 14, React, Framer Motion, and Tailwind CSS.
+
+## Features
+
+- **Immersive 3D Scrollytelling**: Custom HTML5 Canvas implementation that scrubs through a 119-frame high-resolution image sequence synced strictly to scroll progress for a buttery smooth parallax effect.
+- **Lenis Smooth Scrolling**: Overhauled default browser scrolling with Lenis for an inertial, frictionless narrative experience.
+- **3D Neural Clusters**: Interactive WebGL experience built with Three.js/React Three Fiber to dynamically render skills as interconnected nodes in a 3D gravity simulation.
+- **Radial Orbital Contact Node**: Intricate orbital UI component for the contact and social links, featuring expanding nested cards and pulsing animations.
+- **Fully Responsive Architecture**: Custom-tailored layout queries to ensure 3D canvas and components look stunning on both 1280px desktops and 390px mobile screens without sacrificing the overarching artistic direction.
+
+## Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion
+- **3D Rendering**: React Three Fiber / Drei / Three.js
+- **Scrolling Mechanics**: Lenis smooth scroll
+- **Performance**: HTML5 Canvas optimizations for 60fps frame scrubbing
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Architecture Highlights
+- Complete avoidance of React component hydration mismatches through precision coordinate math.
+- Component layouts driven by CSS `transform: scale()` downsampling to preserve 3D radial aesthetics on small device widths natively.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Built by Aryan Yadav - Let's build the future.*

@@ -1,1 +1,29 @@
 @import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-space-grotesk);
+
+  --color-brand-orange: #FF4500;
+  --color-brand-orange-light: #FF8C00;
+  --color-brand-blue: #00BFFF;
+  --color-brand-blue-dark: #0066FF;
+  --color-bg-dark: #050508;
+}
+
+/* Hide scrollbar for immersive feel */
+::-webkit-scrollbar {
+  display: none;
+}
+
+html,
+body {
+  background-color: var(--color-bg-dark);
+  color: #ffffff;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(255, 69, 0, 0.5);
+  color: white;
+}
