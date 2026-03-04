@@ -77,7 +77,7 @@ const NODES: NodeData[] = [
         status: "completed",
         energy: 80,
         relatedIds: [2, 5],
-        actionUrl: "https://www.linkedin.com/in/aryan0203", // Placeholder
+        actionUrl: "https://www.linkedin.com/in/aryan0203",
         actionText: "Visit LinkedIn",
     },
     {
@@ -90,7 +90,7 @@ const NODES: NodeData[] = [
         status: "pending",
         energy: 75,
         relatedIds: [3, 4],
-        actionUrl: "mailto:ay6033756@gmail.com", // Placeholder
+        actionUrl: "mailto:ay6033756@gmail.com",
         actionText: "Send Email",
     },
     {
