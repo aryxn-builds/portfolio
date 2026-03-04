@@ -251,20 +251,32 @@ export default function Home() {
           </div>
         </section>
 
-        {/* SPACER SECTION FOR SEAMLESS INFINITE LOOP 
-            When using Lenis infinite scrolling, it abruptly loops the scroll container.
-            To make it invisible, the end of the scroll container should look exactly 
-            like the start. Hence we add a visual clone of the first section's layout,
-            although the user requested text in Hero only. Since Lenis simply resets the scroll position
-            when we hit the bottom, if Canvas plays from frame 118 back to 0 seamlessly, 
-            the user will barely notice if we don't have text. Wait, if we DO have text in Hero, 
-            when the page loops back to top, the Hero text will just suddenly reappear. 
-            To solve this, we clone the HERO component text visually here at the bottom of the page!
+        {/* SPACER SECTION FOR SEAMLESS INFINITE LOOP
+            When using Lenis infinite scrolling, it abruptly loops the scroll container to the top.
+            To make it invisible, the bottom of the page must look exactly like the top.
+            Here we clone the Hero component text visually so the transition is pixel-perfect.
         */}
-        <section className="h-[120vh] flex flex-col items-center justify-center relative pointer-events-none opacity-0">
-          {/* Space holder for smooth loop. The actual DOM jump will happen here. 
-               We set opacity 0 so that no text clash happens, but it provides scrolling room.
-               Since the background Canvas spans fixed, it acts normally. */}
+        <section className="h-[120vh] flex flex-col items-center justify-center relative pointer-events-none">
+          <div className="flex flex-col items-center text-center px-4">
+            <div>
+              <h1 className="font-display text-5xl md:text-8xl font-bold uppercase tracking-tighter mb-4 text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-gray-500 drop-shadow-[0_0_15px_rgba(255,69,0,0.8)]">
+                ARYAN YADAV
+              </h1>
+            </div>
+
+            <div>
+              <p className="text-xl md:text-3xl font-light text-[#00BFFF] tracking-widest mb-6 uppercase">
+                ML Engineer <span className="text-[#FF4500]">·</span> GenAI <span className="text-[#FF4500]">·</span> Computer Vision
+              </p>
+            </div>
+
+            <ScrollingCaptions mouseX={captionX} mouseY={captionY} />
+          </div>
+
+          <div className="absolute bottom-20 flex flex-col items-center gap-2 opacity-60">
+            <div className="w-[1px] h-16 bg-gradient-to-b from-[#00BFFF] to-transparent" />
+            <span className="text-xs uppercase tracking-widest font-mono">Initiate Sequence</span>
+          </div>
         </section>
 
       </div>
