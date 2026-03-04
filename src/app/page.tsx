@@ -8,6 +8,7 @@ import RadialOrbitalTimeline from "@/components/RadialOrbitalTimeline";
 import MorphingCardStack from "@/components/MorphingCardStack";
 import { FloatingResumeButton } from "@/components/FloatingResumeButton";
 import { LoadingScreen } from "@/components/LoadingScreen";
+import { GlitchHeading } from "@/components/GlitchHeading";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Github, Linkedin, Mail, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -112,9 +113,7 @@ export default function Home() {
             className="flex flex-col items-center text-center px-4"
           >
             <motion.div style={{ x: headingX, y: headingY }}>
-              <h1 className="font-display text-5xl md:text-8xl font-bold uppercase tracking-tighter mb-4 text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-gray-500 drop-shadow-[0_0_15px_rgba(255,69,0,0.8)]">
-                ARYAN YADAV
-              </h1>
+              <GlitchHeading />
             </motion.div>
 
             <motion.div style={{ x: subtitleX, y: subtitleY }}>

@@ -144,6 +144,27 @@ export default function RadialOrbitalTimeline({ className, onNodeStateChange }: 
 
     const [isMounted, setIsMounted] = useState(false);
 
+    // EASTER EGG STATE
+    const [centerClicks, setCenterClicks] = useState(0);
+    const [isEggActive, setIsEggActive] = useState(false);
+    const eggTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    const handleCenterClick = () => {
+        setCenterClicks(prev => prev + 1);
+        if (eggTimeoutRef.current) clearTimeout(eggTimeoutRef.current);
+        eggTimeoutRef.current = setTimeout(() => setCenterClicks(0), 800);
+    };
+
+    useEffect(() => {
+        if (centerClicks >= 3 && !isEggActive) {
+            setCenterClicks(0);
+            setIsEggActive(true);
+            setTimeout(() => {
+                setIsEggActive(false);
+            }, 4000); // Active for 4 seconds
+        }
+    }, [centerClicks, isEggActive]);
+
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsMounted(true);
@@ -317,18 +338,41 @@ export default function RadialOrbitalTimeline({ className, onNodeStateChange }: 
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex items-center justify-center">
                     {/* Pulsing glow rings */}
                     <motion.div
-                        animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute inset-0 rounded-full border-2 border-[#FF4500] scale-150"
+                        animate={isEggActive ? { scale: [1, 4, 1.5], opacity: [0.8, 0, 0] } : { scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+                        transition={{ duration: isEggActive ? 1 : 3, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute inset-0 rounded-full border-2 border-[#FF4500] scale-150 pointer-events-none"
                     />
                     <motion.div
-                        animate={{ scale: [1, 1.8, 1], opacity: [0.3, 0, 0.3] }}
-                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                        className="absolute inset-0 rounded-full border-2 border-[#00BFFF] scale-150"
+                        animate={isEggActive ? { scale: [1, 5, 2], opacity: [0.8, 0, 0] } : { scale: [1, 1.8, 1], opacity: [0.3, 0, 0.3] }}
+                        transition={{ duration: isEggActive ? 1 : 4, repeat: Infinity, ease: "easeInOut", delay: isEggActive ? 0.2 : 1 }}
+                        className="absolute inset-0 rounded-full border-2 border-[#00BFFF] scale-150 pointer-events-none"
                     />
-                    <div className="w-24 h-24 rounded-full flex items-center justify-center bg-gradient-to-br from-[#FF4500] via-[#FF8C00] to-[#00BFFF] shadow-[0_0_30px_rgba(255,69,0,0.4)] border border-white/20">
-                        <span className="font-display font-bold text-3xl text-white tracking-widest drop-shadow-md">AY</span>
-                    </div>
+                    <motion.button
+                        onClick={handleCenterClick}
+                        whileTap={{ scale: 0.9 }}
+                        animate={isEggActive ? { scale: [1, 0, 1] } : {}}
+                        transition={{ duration: 0.8, times: [0, 0.5, 1] }}
+                        className={cn(
+                            "w-24 h-24 rounded-full flex items-center justify-center bg-gradient-to-br from-[#FF4500] via-[#FF8C00] to-[#00BFFF] shadow-[0_0_30px_rgba(255,69,0,0.4)] border border-white/20 transition-all duration-300",
+                            isEggActive && "shadow-[0_0_60px_rgba(255,69,0,0.8),0_0_60px_rgba(0,191,255,0.8)] border-[rgba(255,255,255,0.8)] animate-pulse"
+                        )}
+                    >
+                        <span className="font-display font-bold text-3xl text-white tracking-widest drop-shadow-md pointer-events-none">AY</span>
+                    </motion.button>
+
+                    <AnimatePresence>
+                        {isEggActive && (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.5, y: -40 }}
+                                animate={{ opacity: 1, scale: 1, y: -80 }}
+                                exit={{ opacity: 0, scale: 0.8, y: -60 }}
+                                transition={{ type: "spring", duration: 0.6, delay: 0.4 }}
+                                className="absolute font-display font-bold text-lg md:text-xl text-white text-center w-[300px] drop-shadow-[0_0_15px_rgba(255,255,255,0.8)] pointer-events-none"
+                            >
+                                Building the future, one model at a time.
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
 
                 {/* ORBITAL NODES */}
@@ -356,7 +400,11 @@ export default function RadialOrbitalTimeline({ className, onNodeStateChange }: 
                                 className="absolute z-20"
                                 style={{ left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)` }}
                             >
-                                <div className="relative">
+                                <motion.div
+                                    animate={isEggActive ? { x: Math.cos(angle) * 150, y: Math.sin(angle) * 150, scale: 0.8 } : { x: 0, y: 0, scale: 1 }}
+                                    transition={{ type: "spring", stiffness: isEggActive ? 100 : 250, damping: isEggActive ? 6 : 12 }}
+                                    className="relative"
+                                >
                                     {/* Node Button */}
                                     <button
                                         onClick={() => handleNodeClick(node)}
@@ -380,7 +428,7 @@ export default function RadialOrbitalTimeline({ className, onNodeStateChange }: 
                                             </span>
                                         )}
                                     </button>
-                                </div>
+                                </motion.div>
                             </motion.div>
                         );
                     })

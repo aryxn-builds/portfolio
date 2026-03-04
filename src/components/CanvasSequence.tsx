@@ -220,6 +220,37 @@ export default function CanvasSequence({ mouseX, mouseY, isMobile = false }: Can
     // Blue is on the right; when mouse moves left (v < 0), blue on the right gets stronger
     const blueOpacity = useTransform(mX, [-0.5, 0, 0.5], [0.7, 0.3, 0.1]);
 
+    // EASTER EGG: 5 Clicks on Canvas
+    const [isComic, setIsComic] = useState(false);
+
+    useEffect(() => {
+        let clickCount = 0;
+        let clickTimer: NodeJS.Timeout;
+
+        const handleWindowClick = (e: MouseEvent) => {
+            // Only trigger if in Hero section (scrolled less than 50vh)
+            if (window.scrollY > window.innerHeight * 0.5) return;
+
+            // Ignore UI clicks (buttons, links)
+            const target = e.target as HTMLElement;
+            if (target.closest('a, button, [role=button]')) return;
+
+            clickCount++;
+            clearTimeout(clickTimer);
+
+            if (clickCount >= 5) {
+                clickCount = 0;
+                setIsComic(true);
+                setTimeout(() => setIsComic(false), 2000);
+            } else {
+                clickTimer = setTimeout(() => { clickCount = 0; }, 800);
+            }
+        };
+
+        window.addEventListener('click', handleWindowClick);
+        return () => window.removeEventListener('click', handleWindowClick);
+    }, []);
+
     return (
         <>
             <AnimatePresence>
@@ -243,7 +274,7 @@ export default function CanvasSequence({ mouseX, mouseY, isMobile = false }: Can
 
             <div className="fixed inset-0 z-0 pointer-events-none bg-[#050508] overflow-hidden">
                 <motion.div
-                    className="absolute inset-0 w-full h-full flex items-center justify-center"
+                    className="absolute inset-0 w-full h-full flex items-center justify-center transition-all duration-500"
                     style={{
                         x: portraitX,
                         y: portraitY,
@@ -251,7 +282,8 @@ export default function CanvasSequence({ mouseX, mouseY, isMobile = false }: Can
                         rotateY,
                         transformStyle: "preserve-3d",
                         perspective: "1000px",
-                        transformOrigin: "center center"
+                        transformOrigin: "center center",
+                        filter: isComic ? "grayscale(100%) contrast(200%)" : "none"
                     }}
                 >
                     <canvas
@@ -283,8 +315,26 @@ export default function CanvasSequence({ mouseX, mouseY, isMobile = false }: Can
                 </motion.div>
 
                 {/* Vignette / Dark gradient overlay to ensure text is legible */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-[#050508]/60 mix-blend-multiply" />
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050508_100%)] opacity-80" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-[#050508]/60 mix-blend-multiply transition-opacity" style={{ opacity: isComic ? 0 : 1 }} />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050508_100%)] opacity-80 transition-opacity" style={{ opacity: isComic ? 0 : 1 }} />
+
+                {/* COMIC EASTER EGG SPEECH BUBBLE */}
+                <AnimatePresence>
+                    {isComic && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.5, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            transition={{ type: "spring", bounce: 0.6 }}
+                            className="absolute top-[30%] left-[10%] max-w-xs md:max-w-md bg-white text-black px-6 py-4 rounded-3xl border-4 border-[#FF4500] font-sans font-bold text-lg md:text-xl shadow-[0_10px_30px_rgba(255,69,0,0.5)] z-[100]"
+                            style={{
+                                borderBottomLeftRadius: 4 // classic cartoon bubble tail
+                            }}
+                        >
+                            Stop clicking me! I'm training a model 😄
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </>
     );

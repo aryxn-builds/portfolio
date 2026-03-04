@@ -3,6 +3,7 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import { CustomCursor } from "@/components/CustomCursor";
+import { EasterEggs } from "@/components/EasterEggs";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -30,6 +31,7 @@ export default function RootLayout({
         className={`${inter.variable} ${spaceGrotesk.variable} antialiased bg-[#050508] text-white font-sans`}
       >
         <CustomCursor />
+        <EasterEggs />
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
