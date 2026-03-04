@@ -91,7 +91,7 @@ export default function Home() {
 
         {/* HERO SECTION */}
         <section
-          className="h-[120vh] flex flex-col items-center justify-center relative"
+          className="h-[120vh] flex flex-col items-center justify-center relative bg-transparent"
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
         >
@@ -130,7 +130,7 @@ export default function Home() {
         </section>
 
         {/* ABOUT SECTION */}
-        <section className="h-[100vh] flex items-center px-8 md:px-24">
+        <section className="h-[100vh] flex items-center px-8 md:px-24 bg-[#050508] -mt-px">
           <motion.div
             whileInView={{ opacity: 1, x: 0 }}
             initial={{ opacity: 0, x: -50 }}
@@ -148,7 +148,7 @@ export default function Home() {
         </section>
 
         {/* SKILLS SECTION */}
-        <section className="h-auto min-h-[150vh] flex flex-col justify-center px-4 md:px-0 py-20">
+        <section className="h-auto min-h-[150vh] flex flex-col justify-center px-4 md:px-0 py-20 bg-[#050508] -mt-px">
           <motion.div
             whileInView={{ opacity: 1, y: 0 }}
             initial={{ opacity: 0, y: 50 }}
@@ -171,7 +171,7 @@ export default function Home() {
         </section>
 
         {/* PROJECTS SECTION */}
-        <section className="min-h-[150vh] flex flex-col justify-center py-24 px-8 md:px-24 relative overflow-hidden">
+        <section className="min-h-[150vh] flex flex-col justify-center py-24 px-8 md:px-24 relative overflow-hidden bg-[#050508] -mt-px">
           <h2 className="font-display text-4xl md:text-6xl font-bold mb-16 text-center">
             DEPLOYED <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00BFFF] to-[#FF4500]">MODELS.</span>
           </h2>
@@ -182,7 +182,7 @@ export default function Home() {
         </section>
 
         {/* CONTACT SECTION / RADIAL ORBITAL TIMELINE */}
-        <section className="min-h-[100vh] flex flex-col items-center justify-center relative py-20 overflow-hidden">
+        <section className="min-h-[100vh] flex flex-col items-center justify-center relative py-20 overflow-hidden bg-[#050508] -mt-px">
           {/* LAYER 1: Dark overlay gradient */}
           <div className="absolute inset-0 bg-transparent pointer-events-none z-0" />
 
