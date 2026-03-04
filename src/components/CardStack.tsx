@@ -211,7 +211,7 @@ export default function CardStack({
                                     mass: 0.8,
                                 }}
                                 className={cn(
-                                    "absolute origin-bottom cursor-pointer select-none",
+                                    "absolute origin-bottom cursor-pointer select-none touch-pan-y",
                                     isActive && "cursor-grab active:cursor-grabbing"
                                 )}
                                 style={{

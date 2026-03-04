@@ -173,7 +173,7 @@ export default function MorphingCardStack() {
                     >
                         <CardStack
                             items={cardStackItems}
-                            cardWidth={windowWidth < 768 ? 'calc(85vw - 32px)' : windowWidth < 1280 ? 420 : 520}
+                            cardWidth={windowWidth < 768 ? Math.min(windowWidth - 32, 340) : windowWidth < 1280 ? 420 : 520}
                             cardHeight={windowWidth < 768 ? 220 : windowWidth < 1280 ? 280 : 320}
                             overlap={0.48}
                             spreadDeg={windowWidth < 768 ? 16 : windowWidth < 1280 ? 36 : 48}
