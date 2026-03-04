@@ -1,6 +1,7 @@
 "use client";
 
 import CanvasSequence from "@/components/CanvasSequence";
+import AboutMeSection from "@/components/AboutMeSection";
 import ScrollingCaptions from "@/components/hero/ScrollingCaptions";
 import NeuralClusters from "@/components/NeuralClusters";
 import RadialOrbitalTimeline from "@/components/RadialOrbitalTimeline";
@@ -128,8 +129,12 @@ export default function Home() {
             <span className="text-xs uppercase tracking-widest font-mono">Initiate Sequence</span>
           </motion.div>
         </section>
+        {/* NEW ABOUT ME SECTION */}
+        <section className="bg-[#050508] -mt-px w-full relative z-20">
+          <AboutMeSection />
+        </section>
 
-        {/* ABOUT SECTION */}
+        {/* NEURAL CLUSTERS INTRO */}
         <section className="h-[100vh] flex items-center px-8 md:px-24">
           <motion.div
             whileInView={{ opacity: 1, x: 0 }}
