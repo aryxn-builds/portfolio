@@ -27,3 +27,9 @@ body {
   background: rgba(255, 69, 0, 0.5);
   color: white;
 }
+
+/* Hide default cursor globally when custom cursor is active */
+body.custom-cursor-enabled,
+body.custom-cursor-enabled * {
+  cursor: none !important;
+}
