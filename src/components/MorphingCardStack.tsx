@@ -8,6 +8,7 @@ import { twMerge } from 'tailwind-merge';
 import CardStack, { type CardStackItem } from './CardStack';
 import { Tilt } from "./ui/tilt";
 import { Spotlight } from "./ui/spotlight";
+import { Card3D, Card3DList } from "./ui/Card3D";
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -159,10 +160,8 @@ export default function MorphingCardStack() {
             {/* Cards Container */}
             <div
                 className={cn(
-                    "relative w-full z-10 transition-all duration-700 ease-in-out",
-                    layout === 'stack' ? "flex items-center justify-center pt-8" : "",
-                    layout === 'grid' ? "grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 w-full" : "",
-                    layout === 'list' ? "flex flex-col gap-6 max-w-[600px] w-full mx-auto" : ""
+                    "relative w-full z-10 transition-all duration-700 ease-in-out min-h-[400px]",
+                    layout === 'stack' ? "flex items-center justify-center pt-8" : ""
                 )}
             >
                 {layout === 'stack' ? (
@@ -273,115 +272,60 @@ export default function MorphingCardStack() {
                         />
                     </motion.div>
                 ) : (
-                    <AnimatePresence>
+                    <Card3DList
+                        columns={layout === 'grid' ? 2 : 1}
+                        gap={layout === 'grid' ? "lg" : "md"}
+                        className={layout === 'list' ? "max-w-[600px] mx-auto" : ""}
+                    >
                         {CARDS.map((card, index) => {
                             const isOdd = parseInt(card.id) % 2 !== 0;
+                            const themeKey = isOdd ? "orange" : "blue";
                             const linkColorClass = isOdd ? "text-[#00BFFF] hover:text-[#FF4500]" : "text-[#FF4500] hover:text-[#00BFFF]";
 
                             return (
-                                <motion.div
+                                <Card3D
                                     key={card.id}
-                                    layout
-                                    initial={{ y: 150, opacity: 0 }}
-                                    animate={
-                                        !isInView
-                                            ? { y: 150, opacity: 0 }
-                                            : {
-                                                scale: 1,
-                                                y: 0,
-                                                x: 0,
-                                                rotate: 0,
-                                                zIndex: 1,
-                                                opacity: 1,
-                                            }
-                                    }
-                                    transition={{
-                                        type: "spring",
-                                        stiffness: 260,
-                                        damping: 25,
-                                        mass: 0.8,
-                                        delay: !hasEntered && isInView ? index * 0.1 : 0,
-                                    }}
-                                    whileHover={{ y: -4, scale: 1.02, transition: { duration: 0.2 } }}
-                                    className={cn(
-                                        "group relative overflow-hidden bg-[rgba(8,8,12,0.85)] border border-[rgba(255,100,0,0.25)] rounded-[16px] backdrop-blur-[20px] shadow-[0_0_30px_rgba(255,69,0,0.1),0_0_60px_rgba(0,0,0,0.5)] transition-colors duration-300",
-                                        "hover:border-[rgba(255,100,0,0.6)] hover:shadow-[0_0_30px_rgba(255,69,0,0.25),0_0_30px_rgba(0,191,255,0.1)]",
-                                        layout === 'grid' && "w-full h-full min-h-[240px]",
-                                        layout === 'list' && "w-full cursor-pointer"
-                                    )}
+                                    title={card.title}
+                                    description={card.description}
+                                    icon={card.icon}
+                                    theme={themeKey}
+                                    size={layout === 'grid' ? (windowWidth < 1280 ? "md" : "lg") : "md"}
+                                    variant="premium"
+                                    animated={true}
                                 >
-                                    <Tilt
-                                        rotationFactor={6}
-                                        isRevese={true}
-                                        springOptions={{ stiffness: 26.7, damping: 4.1, mass: 0.2 }}
-                                        className={cn(
-                                            "w-full h-full p-6 md:p-8 flex flex-col",
-                                            layout === 'list' && "md:flex-row gap-6 md:gap-8 active:scale-[0.98] md:items-center"
-                                        )}
-                                        style={{ transformOrigin: 'center center' }}
-                                    >
-                                        <Spotlight
-                                            size={280}
-                                            springOptions={{ stiffness: 26.7, damping: 4.1, mass: 0.2 }}
-                                            className={cn("z-10", isOdd ? "from-[#00BFFF]/25 via-[#00BFFF]/10 to-transparent blur-2xl" : "from-[#FF4500]/25 via-[#FF4500]/10 to-transparent blur-2xl")}
-                                        />
-
-                                        {/* Header: Icon & Title */}
-                                        <div
-                                            className={cn(
-                                                "relative z-20 flex items-start gap-4 mb-4 pointer-events-none",
-                                                layout === 'list' && "md:w-5/12 md:mb-0 md:flex-col md:justify-center"
-                                            )}
-                                        >
-                                            <div className="shrink-0 p-3 rounded-[10px] bg-[rgba(255,100,0,0.1)] border border-[rgba(255,100,0,0.3)] text-[#FF6600] group-hover:text-[#00BFFF] transition-colors duration-400">
-                                                <card.icon size={26} />
-                                            </div>
-                                            <h3 className="text-[1.3rem] font-bold font-display text-white leading-tight">
-                                                {card.title}
-                                            </h3>
-                                        </div>
-
-                                        {/* Body: Description & Tags */}
-                                        <div
-                                            className={cn(
-                                                "relative z-20 flex flex-col grow",
-                                                layout === 'list' && "md:w-7/12 md:justify-center"
-                                            )}
-                                        >
-                                            <p className="text-[0.9rem] text-[rgba(255,255,255,0.65)] font-sans leading-[1.6] mb-5 xl:mb-6 min-h-[3rem] pointer-events-none">
-                                                {card.description}
-                                            </p>
-
-                                            <div className="flex flex-wrap gap-2 mb-6 xl:mb-8 pointer-events-none">
-                                                {card.tags.map((tag) => (
-                                                    <span
-                                                        key={tag}
-                                                        className="text-[0.75rem] font-mono px-[12px] py-[4px] rounded-[6px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.15)] text-[rgba(255,255,255,0.8)] whitespace-nowrap"
-                                                    >
-                                                        {tag}
-                                                    </span>
-                                                ))}
-                                            </div>
-
-                                            <div className="mt-auto pointer-events-auto">
-                                                <a
-                                                    href={card.link}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className={cn(
-                                                        "inline-flex items-center gap-2 text-[0.8rem] font-mono tracking-[0.15em] uppercase transition-colors duration-300",
-                                                        linkColorClass
-                                                    )}
+                                    <div className={cn(
+                                        "flex flex-col grow",
+                                        layout === 'list' && "md:flex-row md:items-end md:justify-between w-full"
+                                    )}>
+                                        <div className="flex flex-wrap gap-2 pointer-events-none mb-6 md:mb-0">
+                                            {card.tags.map((tag) => (
+                                                <span
+                                                    key={tag}
+                                                    className="text-[0.75rem] font-mono px-3 py-1 rounded-md bg-white/5 border border-white/15 text-white/80 whitespace-nowrap"
                                                 >
-                                                    [ ACCESS REPOSITORY ] <ExternalLink size={14} />
-                                                </a>
-                                            </div>
+                                                    {tag}
+                                                </span>
+                                            ))}
                                         </div>
-                                    </Tilt>
-                                </motion.div>
+
+                                        <div className="pointer-events-auto shrink-0">
+                                            <a
+                                                href={card.link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className={cn(
+                                                    "inline-flex items-center gap-2 text-[0.8rem] font-mono tracking-[0.15em] uppercase transition-colors duration-300",
+                                                    linkColorClass
+                                                )}
+                                            >
+                                                [ ACCESS REPOSITORY ] <ExternalLink size={14} />
+                                            </a>
+                                        </div>
+                                    </div>
+                                </Card3D>
                             );
                         })}
-                    </AnimatePresence>
+                    </Card3DList>
                 )}
             </div>
         </div>

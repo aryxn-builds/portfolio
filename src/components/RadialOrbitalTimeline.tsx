@@ -7,6 +7,7 @@ import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Tilt } from "./ui/tilt";
 import { Spotlight } from "./ui/spotlight";
+import { Card3D } from "./ui/Card3D";
 
 function cn(...inputs: (string | undefined | null | false)[]) {
     return twMerge(clsx(inputs));
@@ -404,44 +405,32 @@ export default function RadialOrbitalTimeline({ className, onNodeStateChange }: 
                             left: `${expandedNodePos.left}px`
                         }}
                     >
-                        <Tilt
-                            rotationFactor={6}
-                            isRevese={true}
-                            springOptions={{ stiffness: 26.7, damping: 4.1, mass: 0.2 }}
-                            className={cn(
-                                "relative w-full h-full p-6 rounded-2xl backdrop-blur-xl border border-[rgba(255,100,0,0.3)] shadow-[0_0_30px_rgba(255,69,0,0.2),0_0_30px_rgba(0,191,255,0.1)]",
-                                "bg-[rgba(5,5,8,0.92)]" // Card background
-                            )}
-                            style={{ transformOrigin: 'center center' }}
+                        <button
+                            onClick={(e) => { e.stopPropagation(); setExpandedNodeId(null); }}
+                            className="absolute z-[100] top-4 right-4 text-gray-400 hover:text-white transition-colors p-2 bg-black/40 rounded-full backdrop-blur-md border border-white/10 hover:bg-white/10"
                         >
-                            <Spotlight
-                                size={200}
-                                springOptions={{ stiffness: 26.7, damping: 4.1, mass: 0.2 }}
-                                className="z-10 from-[#00BFFF]/20 via-[#00BFFF]/5 to-transparent blur-2xl"
-                            />
+                            <X size={14} />
+                        </button>
 
-                            <button
-                                onClick={(e) => { e.stopPropagation(); setExpandedNodeId(null); }}
-                                className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors z-20"
-                            >
-                                <X size={16} />
-                            </button>
-
-                            <div className="flex items-center gap-3 mb-4 relative z-20 pointer-events-none">
-                                <div className="p-2 rounded-lg bg-white/5 border border-white/10">
-                                    <expandedNode.icon size={20} className="text-[#00BFFF]" />
+                        <Card3D
+                            title={
+                                <div className="flex flex-col gap-1 -mt-1">
+                                    <span className="font-display font-bold text-xl text-white tracking-wide">{expandedNode.title}</span>
+                                    <span className="font-mono text-[10px] text-[#FF4500] uppercase tracking-wider">{expandedNode.category} &middot; {expandedNode.date}</span>
                                 </div>
-                                <div>
-                                    <h4 className="font-display font-bold text-xl text-white tracking-wide">{expandedNode.title}</h4>
-                                    <span className="font-mono text-xs text-[#FF4500] uppercase tracking-wider">{expandedNode.category} &middot; {expandedNode.date}</span>
-                                </div>
-                            </div>
-
-                            <p className="text-sm text-gray-300 mb-6 leading-relaxed font-light relative z-20 pointer-events-none">
-                                {expandedNode.content}
-                            </p>
-
-                            <div className="space-y-4 relative z-20">
+                            }
+                            description={
+                                <span className="text-sm text-white/70 leading-relaxed font-light">
+                                    {expandedNode.content}
+                                </span>
+                            }
+                            icon={expandedNode.icon}
+                            theme={expandedNode.id % 2 === 0 ? "orange" : "blue"}
+                            size="sm"
+                            variant="premium"
+                            className="pt-10" // Padding top to avoid the absolute positioned Close button
+                        >
+                            <div className="space-y-4 relative z-20 pointer-events-auto">
                                 <div className="flex items-center justify-between text-xs font-mono pointer-events-none">
                                     <span className="text-gray-400">STATUS</span>
                                     <span className={cn("px-2 py-0.5 rounded uppercase text-[10px] font-bold tracking-wider", getStatusColor(expandedNode.status))}>
@@ -471,14 +460,14 @@ export default function RadialOrbitalTimeline({ className, onNodeStateChange }: 
                                         rel="noopener noreferrer"
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
-                                        className="w-full mt-4 flex items-center justify-center gap-2 py-2.5 rounded-lg border border-[#00BFFF]/50 bg-gradient-to-r from-[#00BFFF]/10 to-[#FF4500]/10 hover:from-[#00BFFF]/20 hover:to-[#FF4500]/20 text-white font-mono text-sm uppercase tracking-wider transition-all pointer-events-auto"
+                                        className="w-full mt-4 flex items-center justify-center gap-2 py-2.5 rounded-lg border border-[#00BFFF]/50 bg-gradient-to-r from-[#00BFFF]/10 to-[#FF4500]/10 hover:from-[#00BFFF]/20 hover:to-[#FF4500]/20 text-white font-mono text-sm uppercase tracking-wider transition-all pointer-events-auto cursor-pointer"
                                     >
                                         <span>{expandedNode.actionText || "Explore"}</span>
                                         <expandedNode.icon size={14} />
                                     </motion.a>
                                 )}
                             </div>
-                        </Tilt>
+                        </Card3D>
                     </motion.div>
                 )}
             </AnimatePresence>

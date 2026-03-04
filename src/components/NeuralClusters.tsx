@@ -8,6 +8,8 @@ import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { Tilt } from "./ui/tilt";
 import { Spotlight } from "./ui/spotlight";
+import { Card3D } from "./ui/Card3D";
+import { Code, Eye, Brain, Database, Terminal } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -369,36 +371,45 @@ function Scene({ visible }: { visible: boolean }) {
 
 // ─── MOBILE FALLBACK ──────────────────────────────────────────────────────────
 
+function getClusterIcon(id: string) {
+    switch (id) {
+        case "web": return Code;
+        case "vision": return Eye;
+        case "ml": return Brain;
+        case "data": return Database;
+        case "devops": return Terminal;
+        default: return Brain;
+    }
+}
+
 function MobileSkills() {
     return (
         <div className="flex flex-col gap-5 py-8 px-4">
-            {CLUSTERS.map(c => (
-                <Tilt
-                    key={c.id}
-                    rotationFactor={5}
-                    isRevese={true}
-                    springOptions={{ stiffness: 26.7, damping: 4.1, mass: 0.2 }}
-                    className="relative rounded-2xl overflow-hidden border border-white/10 bg-black/40 backdrop-blur p-5"
-                    style={{ transformOrigin: 'center center' }}
-                >
-                    <Spotlight
-                        size={180}
-                        springOptions={{ stiffness: 26.7, damping: 4.1, mass: 0.2 }}
-                        className="z-10"
-                        style={{ background: `radial-gradient(circle, ${c.color}25 0%, ${c.color}15 30%, transparent 70%)` }}
-                    />
-                    <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(circle at 80% 20%, ${c.color}20 0%, transparent 60%)` }} />
-                    <h3 className="relative z-20 font-mono text-lg font-bold mb-1 pointer-events-none" style={{ color: c.color }}>{c.coreName}</h3>
-                    <p className="relative z-20 text-white/50 text-xs mb-3 pointer-events-none">{c.desc}</p>
-                    <div className="relative z-20 flex flex-wrap gap-2 pointer-events-none">
-                        {c.children.map(s => (
-                            <span key={s} className="text-xs font-mono px-3 py-1 rounded-full border"
-                                style={{ color: c.color, borderColor: `${c.color}50`, background: `${c.color}10` }}>
-                                {s}
-                            </span>
-                        ))}
-                    </div>
-                </Tilt>
+            {CLUSTERS.map((c, i) => (
+                <div key={c.id} className="pointer-events-none">
+                    <Card3D
+                        title={
+                            <span style={{ color: c.color }} className="font-mono text-lg font-bold">{c.coreName}</span>
+                        }
+                        description={
+                            <span className="text-white/50 text-xs">{c.desc}</span>
+                        }
+                        icon={getClusterIcon(c.id)}
+                        theme={i % 2 === 0 ? "orange" : "blue"}
+                        size="sm"
+                        variant="minimal"
+                        animated={true}
+                        disabled={true} // touch devices inherently disable tilt globally, but disabled=true enforces it directly
+                    >
+                        <div className="relative z-20 flex flex-wrap gap-2 pointer-events-none mt-2">
+                            {c.children.map(s => (
+                                <span key={s} className="text-xs font-mono px-3 py-1 rounded-full border border-white/10 bg-white/5 text-white/80">
+                                    {s}
+                                </span>
+                            ))}
+                        </div>
+                    </Card3D>
+                </div>
             ))}
         </div>
     );
