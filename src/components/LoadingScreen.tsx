@@ -26,6 +26,9 @@ export function LoadingScreen() {
         if (hasLoaded === "true") {
             setIsVisible(false); // Skip immediately
         } else {
+            // Lock background scrolling on Mount
+            document.body.style.overflow = "hidden";
+
             // Start timeline
             timersRef.current = [
                 setTimeout(() => setSeqPhase(1), 0),
@@ -41,6 +44,7 @@ export function LoadingScreen() {
 
             return () => {
                 timersRef.current.forEach(clearTimeout);
+                document.body.style.overflow = ""; // Unlock if interrupted
             };
         }
     }, []);
@@ -48,6 +52,10 @@ export function LoadingScreen() {
     const completeLoading = () => {
         sessionStorage.setItem("loaded", "true");
         setIsVisible(false);
+        // Unlock background scrolling on Finish
+        setTimeout(() => {
+            document.body.style.overflow = "";
+        }, 500); // Wait for the 0.5s slide-away exit animation!
     };
 
     const handleSkip = () => {

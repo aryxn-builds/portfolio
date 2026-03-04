@@ -33,7 +33,9 @@ export default function RootLayout({
             __html: `
               try {
                 if (sessionStorage.getItem('loaded') === 'true') {
-                  document.documentElement.classList.add('skip-loading');
+                  const style = document.createElement('style');
+                  style.innerHTML = '.loading-screen-container { display: none !important; }';
+                  document.head.appendChild(style);
                 }
               } catch (e) {}
             `,
