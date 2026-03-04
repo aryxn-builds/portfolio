@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, MotionValue, useTransform, motionValue } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 
@@ -9,12 +9,10 @@ const FRAME_COUNT = 119;
 // Using image path structure frame_000_delay-0.05s.webp -> frame_118_delay-0.05s.webp
 
 interface CanvasSequenceProps {
-    mouseX?: MotionValue<number>;
-    mouseY?: MotionValue<number>;
     isMobile?: boolean;
 }
 
-export default function CanvasSequence({ mouseX, mouseY, isMobile = false }: CanvasSequenceProps) {
+export default function CanvasSequence({ isMobile = false }: CanvasSequenceProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [loaded, setLoaded] = useState(false);
     const [loadingProgress, setLoadingProgress] = useState(0);
@@ -195,21 +193,7 @@ export default function CanvasSequence({ mouseX, mouseY, isMobile = false }: Can
     // --------------------------------------------------------
     // LAYER PARALLAX MAPPINGS (Mobile receives static values)
     // --------------------------------------------------------
-    // Ensure mouse props exist, otherwise default bounds to 0
-    const mX = mouseX || motionValue(0);
-    const mY = mouseY || motionValue(0);
-
-    // Layer 1: Portrait Canvas (Parallax removed per user request)
-
-    // Layer 2: Vignette Glow (Moves in same direction, slightly faster)
-    const glowX = useTransform(mX, (v) => isMobile ? 0 : v * 25);
-    const glowY = useTransform(mY, (v) => isMobile ? 0 : v * 15);
-
-    // Dynamic Opacity Shifts based on Mouse X
-    // Orange is on the left; when mouse moves right (v > 0), orange on the left gets stronger
-    const orangeOpacity = useTransform(mX, [-0.5, 0, 0.5], [0.1, 0.3, 0.7]);
-    // Blue is on the right; when mouse moves left (v < 0), blue on the right gets stronger
-    const blueOpacity = useTransform(mX, [-0.5, 0, 0.5], [0.7, 0.3, 0.1]);
+    // Parallax completely removed per user request.
 
     // EASTER EGG: 5 Clicks on Canvas
     const [isComic, setIsComic] = useState(false);
@@ -261,24 +245,21 @@ export default function CanvasSequence({ mouseX, mouseY, isMobile = false }: Can
                     />
                 </motion.div>
 
-                {/* Layer 2: Parallax Lighting Glow */}
-                <motion.div
-                    className="absolute inset-0 pointer-events-none mix-blend-screen"
-                    style={{ x: glowX, y: glowY }}
-                >
+                {/* Layer 2: Parallax Lighting Glow (Static) */}
+                <div className="absolute inset-0 pointer-events-none mix-blend-screen">
                     {/* Left Orange Glow */}
                     <motion.div
                         className="absolute left-[-10%] top-0 w-[40%] h-full bg-[radial-gradient(circle_at_left,rgba(255,69,0,0.8)_0%,transparent_70%)]"
-                        style={{ opacity: isMobile ? 0.3 : orangeOpacity }}
+                        style={{ opacity: isMobile ? 0.3 : 0.4 }}
                         transition={{ ease: "easeOut", duration: 0.5 }}
                     />
                     {/* Right Blue Glow */}
                     <motion.div
                         className="absolute right-[-10%] top-0 w-[40%] h-full bg-[radial-gradient(circle_at_right,rgba(0,191,255,0.8)_0%,transparent_70%)]"
-                        style={{ opacity: isMobile ? 0.3 : blueOpacity }}
+                        style={{ opacity: isMobile ? 0.3 : 0.4 }}
                         transition={{ ease: "easeOut", duration: 0.5 }}
                     />
-                </motion.div>
+                </div>
 
                 {/* Vignette / Dark gradient overlay to ensure text is legible */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-[#050508]/60 mix-blend-multiply transition-opacity" style={{ opacity: isComic ? 0 : 1 }} />

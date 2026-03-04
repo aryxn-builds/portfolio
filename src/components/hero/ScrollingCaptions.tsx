@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence, MotionValue } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 
@@ -13,12 +13,7 @@ const CAPTIONS = [
     <>Designing systems that <span className="text-[#FF4500] drop-shadow-[0_0_12px_#FF4500]">learn</span>.</>
 ];
 
-interface ScrollingCaptionsProps {
-    mouseX?: MotionValue<number>;
-    mouseY?: MotionValue<number>;
-}
-
-export default function ScrollingCaptions({ mouseX, mouseY }: ScrollingCaptionsProps) {
+export default function ScrollingCaptions() {
     const [activeIndex, setActiveIndex] = useState(0);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -45,15 +40,10 @@ export default function ScrollingCaptions({ mouseX, mouseY }: ScrollingCaptionsP
         };
     }, []);
 
-    // If mouseX/Y properties are provided entirely, we use them. Otherwise, default 0.
-    const xParallax = mouseX ? mouseX : 0;
-    const yParallax = mouseY ? mouseY : 0;
-
     return (
         <motion.div
             ref={containerRef}
             className="relative flex flex-col items-center justify-center min-h-[3rem] w-full mt-4 overflow-hidden pointer-events-none"
-            style={{ x: xParallax, y: yParallax }}
             // Initial fade-in delay per spec: 0.8s duration, 1.5s delay
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}

@@ -9,7 +9,7 @@ import MorphingCardStack from "@/components/MorphingCardStack";
 import { FloatingResumeButton } from "@/components/FloatingResumeButton";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { GlitchHeading } from "@/components/GlitchHeading";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { Github, Linkedin, Mail, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
 import { clsx } from "clsx";
@@ -23,36 +23,6 @@ export default function Home() {
   const [isOrbitalActive, setIsOrbitalActive] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Mouse tracking raw values (-0.5 to 0.5)
-  const rawMouseX = useMotionValue(0);
-  const rawMouseY = useMotionValue(0);
-
-  // Smooth springs for tracking
-  const springConfig = { stiffness: 50, damping: 15 };
-  const springX = useSpring(rawMouseX, springConfig);
-  const springY = useSpring(rawMouseY, springConfig);
-
-  // --------------------------------------------------------
-  // LAYER PARALLAX MAPPINGS (Mobile automatically receives 0)
-  // --------------------------------------------------------
-
-  // Layer 3: Heading (Opposite direction, moves fastest)
-  const headingX = useTransform(springX, (v) => isMobile ? 0 : v * -22);
-  const headingY = useTransform(springY, (v) => isMobile ? 0 : v * -14);
-
-  // Layer 4: Subtitle (Opposite direction, moves medium)
-  const subtitleX = useTransform(springX, (v) => isMobile ? 0 : v * -14);
-  const subtitleY = useTransform(springY, (v) => isMobile ? 0 : v * -9);
-
-  // Layer 5: Captions (Opposite direction, moves slowly)
-  // The actual transform mappings for Caption are passed into the component component
-  const captionX = useTransform(springX, (v) => isMobile ? 0 : v * -10);
-  const captionY = useTransform(springY, (v) => isMobile ? 0 : v * -6);
-
-  // Layer 6: Initiate Sequence (Opposite direction, moves barely)
-  const seqX = useTransform(springX, (v) => isMobile ? 0 : v * -8);
-  const seqY = useTransform(springY, (v) => isMobile ? 0 : v * -4);
-
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.matchMedia('(hover: none)').matches || window.innerWidth < 768);
@@ -62,29 +32,14 @@ export default function Home() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (isMobile) return;
-    // Normalize to -0.5 -> 0.5
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    rawMouseX.set(x);
-    rawMouseY.set(y);
-  };
-
-  const handleMouseLeave = () => {
-    rawMouseX.set(0);
-    rawMouseY.set(0);
-  };
-
   return (
     <main className="relative w-full h-full min-h-screen font-sans selection:bg-[#FF4500]/50 text-white overflow-hidden">
 
       {/* INITIALIZATION LOADING SCREEN */}
       <LoadingScreen />
 
-      {/* Background Canvas Layer (Passes mouse values down for Portrait Layer 1 & Glow Layer 2 parallax) */}
-      <CanvasSequence mouseX={springX} mouseY={springY} isMobile={isMobile} />
+      {/* Background Canvas Layer (No mouse values passed) */}
+      <CanvasSequence isMobile={isMobile} />
 
       {/* Dynamic Blur & Darkening Overlay for Orbital Selection */}
       <div
@@ -103,8 +58,6 @@ export default function Home() {
         {/* HERO SECTION */}
         <section
           className="h-[120vh] flex flex-col items-center justify-center relative"
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -112,22 +65,21 @@ export default function Home() {
             transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
             className="flex flex-col items-center text-center px-4"
           >
-            <motion.div style={{ x: headingX, y: headingY }}>
+            <motion.div>
               <GlitchHeading />
             </motion.div>
 
-            <motion.div style={{ x: subtitleX, y: subtitleY }}>
+            <motion.div>
               <p className="text-xl md:text-3xl font-light text-[#00BFFF] tracking-widest mb-6 uppercase">
                 ML Engineer <span className="text-[#FF4500]">·</span> GenAI <span className="text-[#FF4500]">·</span> Computer Vision
               </p>
             </motion.div>
 
-            {/* Injects the scroll-listener captions with dynamic mouse mapping */}
-            <ScrollingCaptions mouseX={captionX} mouseY={captionY} />
+            {/* Injects the scroll-listener captions */}
+            <ScrollingCaptions />
 
             {/* HERO INLINE RESUME BUTTON */}
             <motion.div
-              style={{ x: seqX, y: seqY }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.5, delay: 1.2, ease: "easeOut" }}
@@ -154,7 +106,6 @@ export default function Home() {
           </motion.div>
 
           <motion.div
-            style={{ x: seqX, y: seqY }}
             initial={{ y: 0 }}
             animate={{ y: [0, 10, 0] }}
             transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
@@ -292,7 +243,7 @@ export default function Home() {
               </p>
             </div>
 
-            <ScrollingCaptions mouseX={captionX} mouseY={captionY} />
+            <ScrollingCaptions />
           </div>
 
           <div className="absolute bottom-20 flex flex-col items-center gap-2 opacity-60">
