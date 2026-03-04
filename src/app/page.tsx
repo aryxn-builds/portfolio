@@ -155,6 +155,7 @@ export default function Home() {
 
           <motion.div
             style={{ x: seqX, y: seqY }}
+            initial={{ y: 0 }}
             animate={{ y: [0, 10, 0] }}
             transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
             className="absolute bottom-20 flex flex-col items-center gap-2 opacity-60"
