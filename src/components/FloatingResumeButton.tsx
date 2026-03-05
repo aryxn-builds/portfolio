@@ -19,7 +19,7 @@ export function FloatingResumeButton() {
     };
 
     return (
-        <div className="fixed bottom-8 right-8 z-[9999] flex items-center justify-center">
+        <div className="fixed bottom-[16px] right-[16px] md:bottom-8 md:right-8 z-[9999] flex items-center justify-center">
             {/* Background Pulse Animation */}
             <motion.div
                 animate={{
@@ -50,9 +50,9 @@ export function FloatingResumeButton() {
                 whileTap={{ scale: 0.97 }}
                 className={`
           relative flex items-center justify-center gap-2 
-          h-[40px] md:h-[44px] min-w-[44px] min-h-[44px] px-5 
+          h-[40px] md:h-[44px] min-w-[44px] px-4 md:px-5 
           rounded-full backdrop-blur-[12px] 
-          border transition-all duration-300 ease-out cursor-pointer
+          border transition-all duration-300 ease-out cursor-pointer touch-manipulation
           ${downloading
                         ? "bg-rgba(5,5,8,0.9) border-[#00BFFF] shadow-[0_0_15px_rgba(0,191,255,0.3)] text-[#00BFFF]"
                         : "bg-[rgba(5,5,8,0.9)] border-[#FF4500]/60 shadow-[0_0_15px_rgba(255,69,0,0.2)] text-white"
@@ -69,7 +69,7 @@ export function FloatingResumeButton() {
                             className="flex items-center gap-2"
                         >
                             <CheckCircle size={16} className="text-[#00BFFF]" />
-                            <span className="font-mono text-[0.7rem] uppercase tracking-[0.15em] whitespace-nowrap">
+                            <span className="font-mono text-[0.65rem] md:text-[0.7rem] uppercase tracking-[0.15em] whitespace-nowrap">
                                 DOWNLOADING...
                             </span>
                         </motion.div>
@@ -82,7 +82,7 @@ export function FloatingResumeButton() {
                             className="flex items-center gap-2"
                         >
                             <Download size={16} className="text-[#FF4500]" />
-                            <span className="font-mono text-[0.7rem] uppercase tracking-[0.15em] whitespace-nowrap">
+                            <span className="font-mono text-[0.65rem] md:text-[0.7rem] uppercase tracking-[0.15em] whitespace-nowrap">
                                 RESUME
                             </span>
                         </motion.div>

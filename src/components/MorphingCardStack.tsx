@@ -118,11 +118,11 @@ export default function MorphingCardStack() {
     return (
         <div ref={containerRef} className="w-full flex flex-col items-center justify-center max-w-6xl mx-auto">
             {/* Layout Toggle Buttons */}
-            <div className="flex items-center justify-center gap-3 mb-10 z-20">
+            <div className="flex items-center justify-center gap-3 md:gap-4 mb-8 md:mb-10 z-20 scale-90 md:scale-[0.85] xl:scale-100 origin-center min-h-[44px]">
                 <button
                     onClick={() => setLayout('stack')}
                     className={cn(
-                        "p-2.5 rounded-lg border transition-all duration-300",
+                        "p-3 md:p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg border transition-all duration-300 touch-manipulation",
                         layout === 'stack'
                             ? "bg-[#FF4500]/20 border-[#FF4500] text-[#FF4500]"
                             : "bg-white/5 border-white/10 text-white/40 hover:text-white/60 hover:bg-white/10"
@@ -134,7 +134,7 @@ export default function MorphingCardStack() {
                 <button
                     onClick={() => setLayout('grid')}
                     className={cn(
-                        "p-2.5 rounded-lg border transition-all duration-300",
+                        "p-3 md:p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg border transition-all duration-300 touch-manipulation",
                         layout === 'grid'
                             ? "bg-[#FF4500]/20 border-[#FF4500] text-[#FF4500]"
                             : "bg-white/5 border-white/10 text-white/40 hover:text-white/60 hover:bg-white/10"
@@ -146,7 +146,7 @@ export default function MorphingCardStack() {
                 <button
                     onClick={() => setLayout('list')}
                     className={cn(
-                        "p-2.5 rounded-lg border transition-all duration-300",
+                        "p-3 md:p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg border transition-all duration-300 touch-manipulation",
                         layout === 'list'
                             ? "bg-[#FF4500]/20 border-[#FF4500] text-[#FF4500]"
                             : "bg-white/5 border-white/10 text-white/40 hover:text-white/60 hover:bg-white/10"
@@ -173,10 +173,11 @@ export default function MorphingCardStack() {
                     >
                         <CardStack
                             items={cardStackItems}
-                            cardWidth={windowWidth < 768 ? Math.min(windowWidth - 32, 340) : windowWidth < 1280 ? 420 : 520}
-                            cardHeight={windowWidth < 768 ? 220 : windowWidth < 1280 ? 280 : 320}
+                            cardWidth={windowWidth < 768 ? windowWidth - 32 : windowWidth < 1024 ? Math.min(windowWidth - 80, 560) : windowWidth < 1280 ? Math.min(windowWidth * 0.9, 600) : 520}
+                            cardHeight={windowWidth < 768 ? 240 : windowWidth < 1024 ? 260 : windowWidth < 1280 ? 280 : 320}
                             overlap={0.48}
-                            spreadDeg={windowWidth < 768 ? 16 : windowWidth < 1280 ? 36 : 48}
+                            spreadDeg={windowWidth < 768 ? 15 : windowWidth < 1024 ? 30 : windowWidth < 1280 ? 36 : 48}
+                            hideInactiveCards={windowWidth < 768}
                             perspectivePx={1100}
                             depthPx={140}
                             tiltXDeg={12}
@@ -235,11 +236,11 @@ export default function MorphingCardStack() {
                                                 {card.description}
                                             </p>
 
-                                            <div className="flex flex-wrap gap-2 mb-6 xl:mb-8 pointer-events-none">
+                                            <div className="flex flex-wrap gap-[6px] md:gap-2 mb-6 xl:mb-8 pointer-events-none w-full">
                                                 {card.tags.map((tag: string) => (
                                                     <span
                                                         key={tag}
-                                                        className="text-[0.75rem] font-mono px-[12px] py-[4px] rounded-[6px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.15)] text-[rgba(255,255,255,0.8)] whitespace-nowrap"
+                                                        className="text-[0.65rem] min-[375px]:text-[0.7rem] md:text-[0.75rem] font-mono px-[8px] py-[4px] md:px-[12px] md:py-[4px] min-[320px]:max-[374px]:px-[7px] min-[320px]:max-[374px]:py-[3px] rounded-[6px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.15)] text-[rgba(255,255,255,0.8)] whitespace-nowrap"
                                                     >
                                                         {tag}
                                                     </span>
@@ -252,7 +253,7 @@ export default function MorphingCardStack() {
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className={cn(
-                                                        "inline-flex items-center gap-2 text-[0.8rem] font-mono tracking-[0.15em] uppercase transition-colors duration-300 pointer-events-auto",
+                                                        "inline-flex items-center justify-center md:justify-start gap-2 text-[0.65rem] min-[375px]:text-[0.7rem] md:text-[0.8rem] font-mono tracking-[0.1em] md:tracking-[0.15em] uppercase transition-colors duration-300 pointer-events-auto min-h-[44px] w-full md:w-auto",
                                                         linkColorClass, linkHoverClass
                                                     )}
                                                     onClick={(e) => {
@@ -273,9 +274,9 @@ export default function MorphingCardStack() {
                     </motion.div>
                 ) : (
                     <Card3DList
-                        columns={layout === 'grid' ? 2 : 1}
-                        gap={layout === 'grid' ? "lg" : "md"}
-                        className={layout === 'list' ? "max-w-[600px] mx-auto" : ""}
+                        columns={layout === 'grid' ? (windowWidth < 768 ? 1 : 2) : 1}
+                        gap={layout === 'grid' ? (windowWidth < 768 ? "md" : "lg") : (windowWidth < 768 ? "sm" : "md")}
+                        className={layout === 'list' ? "max-w-full md:max-w-[680px] mx-auto" : ""}
                     >
                         {CARDS.map((card, index) => {
                             const isOdd = parseInt(card.id) % 2 !== 0;
@@ -297,24 +298,24 @@ export default function MorphingCardStack() {
                                         "flex flex-col grow",
                                         layout === 'list' && "md:flex-row md:items-end md:justify-between w-full"
                                     )}>
-                                        <div className="flex flex-wrap gap-2 pointer-events-none mb-6 md:mb-0">
+                                        <div className="flex flex-wrap gap-[6px] md:gap-2 pointer-events-none mb-6 md:mb-0 w-full md:w-auto">
                                             {card.tags.map((tag) => (
                                                 <span
                                                     key={tag}
-                                                    className="text-[0.75rem] font-mono px-3 py-1 rounded-md bg-white/5 border border-white/15 text-white/80 whitespace-nowrap"
+                                                    className="text-[0.65rem] min-[375px]:text-[0.7rem] md:text-[0.75rem] font-mono px-[8px] py-[4px] md:px-[12px] md:py-[4px] min-[320px]:max-[374px]:px-[7px] min-[320px]:max-[374px]:py-[3px] rounded-md bg-white/5 border border-white/15 text-white/80 whitespace-nowrap"
                                                 >
                                                     {tag}
                                                 </span>
                                             ))}
                                         </div>
 
-                                        <div className="pointer-events-auto shrink-0">
+                                        <div className="pointer-events-auto shrink-0 w-full md:w-auto">
                                             <a
                                                 href={card.link}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className={cn(
-                                                    "inline-flex items-center gap-2 text-[0.8rem] font-mono tracking-[0.15em] uppercase transition-colors duration-300",
+                                                    "inline-flex items-center justify-center md:justify-start gap-2 text-[0.65rem] min-[375px]:text-[0.7rem] md:text-[0.8rem] font-mono tracking-[0.1em] md:tracking-[0.15em] uppercase transition-colors duration-300 min-h-[44px] w-full md:w-auto",
                                                     linkColorClass
                                                 )}
                                             >

@@ -144,8 +144,8 @@ export default function Home() {
         </section>
 
         {/* PROJECTS SECTION */}
-        <section className="min-h-[150vh] flex flex-col justify-center py-24 px-8 md:px-24 relative overflow-hidden">
-          <h2 className="font-display text-4xl md:text-6xl font-bold mb-16 text-center">
+        <section className="min-h-[150vh] flex flex-col justify-center py-[40px] md:py-24 px-[16px] md:px-[80px] xl:px-24 max-w-[100vw] overflow-x-hidden relative">
+          <h2 className="font-display text-[clamp(1.4rem,8vw,2.4rem)] md:text-[clamp(2rem,6vw,3rem)] xl:text-[4rem] font-bold mb-8 md:mb-16 text-center leading-tight">
             DEPLOYED <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00BFFF] to-[#FF4500]">MODELS.</span>
           </h2>
 

@@ -38,6 +38,7 @@ export type CardStackProps = {
     pauseOnHover?: boolean;
     showDots?: boolean;
     initialIndex?: number;
+    hideInactiveCards?: boolean;
     renderCard?: (item: CardStackItem, isActive: boolean) => React.ReactNode;
 };
 
@@ -60,6 +61,7 @@ export default function CardStack({
     pauseOnHover = true,
     showDots = true,
     initialIndex = 0,
+    hideInactiveCards = false,
     renderCard,
 }: CardStackProps) {
     const [activeIndex, setActiveIndex] = useState(initialIndex);
@@ -70,8 +72,8 @@ export default function CardStack({
     const defaultRenderCard = (item: CardStackItem, isActive: boolean) => (
         <div
             className={cn(
-                "relative w-full h-full rounded-[16px] overflow-hidden transition-all duration-300",
-                "bg-[rgba(8,8,12,0.88)] backdrop-blur-[20px]",
+                "relative w-full h-full overflow-hidden transition-all duration-300",
+                "bg-[rgba(8,8,12,0.88)] backdrop-blur-[20px] rounded-[16px]",
                 isActive
                     ? "border-2 border-[rgba(255,100,0,0.6)] shadow-[0_0_30px_rgba(255,69,0,0.25),0_0_60px_rgba(0,0,0,0.5)]"
                     : "border border-[rgba(255,100,0,0.25)] shadow-lg"
@@ -83,11 +85,11 @@ export default function CardStack({
                 className="absolute inset-0 w-full h-full object-cover opacity-30"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-            <div className="absolute bottom-0 w-full p-6 text-left">
-                <h3 className="font-display text-xl font-bold text-white mb-2">
+            <div className="absolute bottom-0 w-full p-5 md:p-6 text-left flex flex-col justify-end content-end">
+                <h3 className="font-display text-[clamp(1rem,4vw,1.3rem)] md:text-xl font-bold text-white mb-2 line-clamp-2 md:line-clamp-none">
                     {item.title}
                 </h3>
-                <p className="font-sans text-sm text-[rgba(255,255,255,0.65)] line-clamp-2">
+                <p className="font-sans text-[clamp(0.8rem,3vw,0.95rem)] md:text-sm text-[rgba(255,255,255,0.65)] line-clamp-3 md:line-clamp-2">
                     {item.description}
                 </p>
             </div>
@@ -183,6 +185,8 @@ export default function CardStack({
                         // Faded opacity for very far back cards
                         const opacity = isActive ? 1 : Math.max(1 - (Math.abs(distance) * 0.25), 0);
 
+                        if (hideInactiveCards && !isActive) return null;
+
                         // Inactive cards can be clicked or swiped to
                         // Drag constraints only tight along x to simulate swipe
                         return (
@@ -228,24 +232,24 @@ export default function CardStack({
 
             {/* Navigation Dots below */}
             {showDots && (
-                <div className="flex flex-col items-center mt-12 mb-4 gap-4 z-20" style={{ transform: `translateZ(100px)` }}>
-                    <div className="flex items-center gap-3">
+                <div className="flex flex-col items-center mt-5 md:mt-12 mb-4 gap-3 md:gap-4 z-20" style={{ transform: `translateZ(100px)` }}>
+                    <div className="flex items-center gap-3 h-[44px]">
                         {items.map((item, idx) => (
                             <React.Fragment key={idx}>
                                 <button
                                     onClick={() => handleCardClick(idx)}
                                     className={cn(
-                                        "h-[8px] rounded-full transition-all duration-300",
+                                        "h-[6px] md:h-[8px] rounded-full transition-all duration-300",
                                         idx === activeIndex
-                                            ? "w-[16px] bg-[#FF4500]"
-                                            : "w-[8px] bg-[rgba(255,255,255,0.2)] bg-opacity-30 hover:bg-[rgba(255,255,255,0.5)] m-1"
+                                            ? "w-[14px] md:w-[16px] bg-[#FF4500]"
+                                            : "w-[6px] md:w-[8px] bg-[rgba(255,255,255,0.2)] bg-opacity-30 hover:bg-[rgba(255,255,255,0.5)] m-1"
                                     )}
                                     aria-label={`Go to card ${item.title}`}
                                 />
                             </React.Fragment>
                         ))}
                     </div>
-                    <p className="text-[0.7rem] font-mono text-[rgba(255,100,0,0.4)] tracking-[0.2em] uppercase">
+                    <p className="text-[0.65rem] md:text-[0.7rem] font-mono text-[rgba(255,100,0,0.4)] tracking-[0.2em] uppercase">
                         SWIPE TO NAVIGATE
                     </p>
                 </div>
