@@ -19,7 +19,7 @@ const CLUSTERS = [
     {
         id: "web", coreName: "Code", color: "#00BFFF",
         position: [-4.5, 1.5, 0] as [number, number, number],
-        children: ["Java", "HTML", "CSS", "JavaScript", "SQL"],
+        children: ["Python", "Java", "HTML", "CSS", "JavaScript", "SQL"],
         desc: "Languages bridging logic and the web."
     },
     {
@@ -31,7 +31,7 @@ const CLUSTERS = [
     {
         id: "ml", coreName: "Intelligence", color: "#A855F7",
         position: [0, -0.5, 2] as [number, number, number],
-        children: ["Scikit-Learn", "NLP", "Keras", "TensorBoard", "CNN", "RNN", "LSTM", "GRU"],
+        children: ["TensorFlow", "Scikit-Learn", "NLP", "Keras", "TensorBoard", "CNN", "RNN", "LSTM", "GRU"],
         desc: "Architectures that learn and adapt."
     },
     {
