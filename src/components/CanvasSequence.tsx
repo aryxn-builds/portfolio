@@ -32,7 +32,8 @@ export default function CanvasSequence({ isMobile = false }: CanvasSequenceProps
             img.onload = () => {
                 loadedCount++;
                 setLoadingProgress((loadedCount / FRAME_COUNT) * 100);
-                if (loadedCount === FRAME_COUNT) {
+                // Show canvas as soon as FIRST frame is ready so portrait appears instantly
+                if (loadedCount === 1) {
                     setLoaded(true);
                 }
             };
@@ -238,7 +239,7 @@ export default function CanvasSequence({ isMobile = false }: CanvasSequenceProps
                 >
                     <canvas
                         ref={canvasRef}
-                        className={`w-full h-full object-cover transition-opacity duration-[2000ms] ${loaded ? "opacity-60" : "opacity-0"}`}
+                        className={`w-full h-full object-cover transition-opacity duration-700 ${loaded ? "opacity-60" : "opacity-0"}`}
                         style={{
                             filter: "drop-shadow(0 0 25px rgba(255, 69, 0, 0.15)) drop-shadow(0 0 25px rgba(0, 191, 255, 0.15))",
                         }}
