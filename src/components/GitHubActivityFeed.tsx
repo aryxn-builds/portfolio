@@ -20,8 +20,27 @@ interface GitHubEvent {
     ref?: string;
     commits?: { sha: string; message: string }[];
     head?: string;
+    size?: number; // total number of commits in the push (always accurate)
   };
   created_at: string;
+}
+
+/* ─── commit message cache (SHA → message) ─── */
+const commitMsgCache = new Map<string, string>();
+
+async function fetchCommitMessage(repoName: string, sha: string): Promise<string | null> {
+  const key = `${repoName}@${sha}`;
+  if (commitMsgCache.has(key)) return commitMsgCache.get(key)!;
+  try {
+    const res = await fetch(`https://api.github.com/repos/${repoName}/commits/${sha}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const msg: string = data.commit?.message?.split('\n')[0] ?? '';
+    if (msg) commitMsgCache.set(key, msg);
+    return msg || null;
+  } catch {
+    return null;
+  }
 }
 
 interface CommitRow {
@@ -169,7 +188,8 @@ export default function GitHubActivityFeed() {
       if (ev.type !== "PushEvent") return;
       const key = ev.created_at.slice(0, 10);
       if (key in counts) {
-        counts[key] += ev.payload.commits?.length ?? 1;
+        // payload.size is always the true commit count, even when commits array is empty
+        counts[key] += ev.payload.size ?? ev.payload.commits?.length ?? 1;
       }
     });
     return Object.entries(counts).map(([date, count]) => ({
@@ -179,8 +199,8 @@ export default function GitHubActivityFeed() {
     }));
   }
 
-  /* ─── BUILD COMMIT ROWS from events ─── */
-  function buildCommits(events: GitHubEvent[]): CommitRow[] {
+  /* ─── BUILD COMMIT ROWS from events (initial pass — messages filled in later) ─── */
+  function buildCommitsInitial(events: GitHubEvent[]): CommitRow[] {
     const rows: CommitRow[] = [];
     const existing = prevCommitIds.current;
 
@@ -189,30 +209,18 @@ export default function GitHubActivityFeed() {
       .slice(0, 10)
       .forEach((ev) => {
         const cs = ev.payload.commits;
-        if (cs && cs.length > 0) {
-          cs.slice(0, 1).forEach((c) => {
-            rows.push({
-              id: `${ev.id}-${c.sha}`,
-              repo: ev.repo.name,
-              branch: (ev.payload.ref ?? "refs/heads/main").replace("refs/heads/", ""),
-              message: c.message || `Branch update · ${c.sha.slice(0, 7)}`,
-              sha: c.sha,
-              time: ev.created_at,
-              isNew: !existing.has(`${ev.id}-${c.sha}`),
-            });
-          });
-        } else {
-          const sha = ev.payload.head ?? "0000000";
-          rows.push({
-            id: `${ev.id}-${sha}`,
-            repo: ev.repo.name,
-            branch: (ev.payload.ref ?? "refs/heads/main").replace("refs/heads/", ""),
-            message: `Branch update · ${sha.slice(0, 7)}`,
-            sha,
-            time: ev.created_at,
-            isNew: !existing.has(`${ev.id}-${sha}`),
-          });
-        }
+        const sha = (cs && cs.length > 0 ? cs[0].sha : null) ?? ev.payload.head ?? "0000000";
+        const inlineMsg = cs && cs.length > 0 ? (cs[0].message?.split('\n')[0] ?? '') : '';
+        rows.push({
+          id: `${ev.id}-${sha}`,
+          repo: ev.repo.name,
+          branch: (ev.payload.ref ?? "refs/heads/main").replace("refs/heads/", ""),
+          // Start with inline message if available; API fetch will overwrite if needed
+          message: inlineMsg || `Commit · ${sha.slice(0, 7)}`,
+          sha,
+          time: ev.created_at,
+          isNew: !existing.has(`${ev.id}-${sha}`),
+        });
       });
 
     prevCommitIds.current = new Set(rows.map((r) => r.id));
@@ -225,27 +233,67 @@ export default function GitHubActivityFeed() {
     setLoading(true);
     setError(false);
     try {
-      const [eventsRes, reposRes] = await Promise.all([
-        fetch(`https://api.github.com/users/${GH_USER}/events/public`),
+      // Bug 1 fix: fetch 3 pages (up to 300 events) so the 30-day graph has
+      // enough history even when many pushes happen on a single day.
+      const [p1Res, p2Res, p3Res, reposRes] = await Promise.all([
+        fetch(`https://api.github.com/users/${GH_USER}/events/public?per_page=100&page=1`),
+        fetch(`https://api.github.com/users/${GH_USER}/events/public?per_page=100&page=2`),
+        fetch(`https://api.github.com/users/${GH_USER}/events/public?per_page=100&page=3`),
         fetch(`https://api.github.com/users/${GH_USER}/repos?per_page=100`),
       ]);
-      if (!eventsRes.ok || !reposRes.ok) throw new Error("API error");
+      if (!p1Res.ok || !reposRes.ok) throw new Error("API error");
 
-      const events: GitHubEvent[] = await eventsRes.json();
+      const p1: GitHubEvent[] = await p1Res.json();
+      const p2: GitHubEvent[] = p2Res.ok ? await p2Res.json() : [];
+      const p3: GitHubEvent[] = p3Res.ok ? await p3Res.json() : [];
       const repos: { stargazers_count: number }[] = await reposRes.json();
 
+      // Deduplicate by event id across pages
+      const seenIds = new Set<string>();
+      const events: GitHubEvent[] = [...p1, ...p2, ...p3].filter((ev) => {
+        if (seenIds.has(ev.id)) return false;
+        seenIds.add(ev.id);
+        return true;
+      });
+
       const totalStars = repos.reduce((s, r) => s + (r.stargazers_count ?? 0), 0);
+
+      // Bonus fix: use payload.size (always accurate) instead of commits array length
       const pushCount = events
         .filter((e) => e.type === "PushEvent")
-        .reduce((n, e) => n + (e.payload.commits?.length ?? 1), 0);
+        .reduce((n, e) => n + (e.payload.size ?? e.payload.commits?.length ?? 1), 0);
 
       const days = window.innerWidth < 768 ? 14 : 30;
       setGraph(buildGraph(events, days));
-      setCommits(buildCommits(events));
+
+      // Build initial rows (may have placeholder messages for force-pushes)
+      const initialRows = buildCommitsInitial(events);
+      setCommits(initialRows);
       setStars(totalStars);
       setCommitCount(pushCount);
       setLastFetched(Date.now());
       setLastUpdatedLabel("just now");
+
+      // Bug 2 fix: for rows that still have placeholder messages ("Commit · SHA")
+      // fetch real commit details from the per-commit API asynchronously.
+      const needsFetch = initialRows.filter((r) =>
+        r.message.startsWith("Commit · ") && r.sha.length >= 7
+      );
+      if (needsFetch.length > 0) {
+        const resolved = await Promise.all(
+          needsFetch.map(async (r) => ({
+            id: r.id,
+            msg: await fetchCommitMessage(r.repo, r.sha),
+          }))
+        );
+        setCommits((prev) =>
+          prev.map((row) => {
+            const found = resolved.find((x) => x.id === row.id);
+            if (found && found.msg) return { ...row, message: found.msg };
+            return row;
+          })
+        );
+      }
     } catch {
       setError(true);
     } finally {
