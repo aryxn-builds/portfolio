@@ -315,71 +315,93 @@ export default function RecruiterMode() {
             {/* ───── MOBILE BOTTOM SHEET ───── */}
             <AnimatePresence>
                 {active && isMobile && mobileSheetOpen && (
-                    <motion.div
-                        initial={{ y: "100%" }}
-                        animate={{ y: 0 }}
-                        exit={{ y: "100%" }}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        drag="y"
-                        dragConstraints={{ top: 0, bottom: 0 }}
-                        dragElastic={0.2}
-                        onDragEnd={(_e, info) => {
-                            if (info.offset.y > 100) setMobileSheetOpen(false);
-                        }}
-                        style={{
-                            position: "fixed",
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            height: "60vh",
-                            background: "rgba(5,5,8,0.97)",
-                            borderTop: "1px solid rgba(255,69,0,0.3)",
-                            backdropFilter: "blur(20px)",
-                            zIndex: 9990,
-                            padding: "12px 20px 24px",
-                            overflowY: "auto",
-                            borderRadius: "16px 16px 0 0",
-                            display: "flex",
-                            flexDirection: "column",
-                        }}
-                    >
-                        {/* Drag handle */}
-                        <div style={{ display: "flex", justifyContent: "center", paddingBottom: 12 }}>
-                            <div
-                                style={{
-                                    width: 40,
-                                    height: 4,
-                                    borderRadius: 2,
-                                    background: "rgba(255,255,255,0.2)",
-                                }}
-                            />
-                        </div>
-                        {/* Close button */}
-                        <button
+                    <>
+                        {/* Dark backdrop — covers everything including GitHub trigger button */}
+                        <motion.div
+                            key="rm-backdrop"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
                             onClick={() => setMobileSheetOpen(false)}
                             style={{
-                                position: "absolute",
-                                top: 12,
-                                right: 16,
-                                background: "none",
-                                border: "none",
-                                color: "rgba(255,255,255,0.4)",
-                                cursor: "pointer",
-                                padding: 4,
+                                position: "fixed",
+                                inset: 0,
+                                background: "rgba(0,0,0,0.6)",
+                                zIndex: 9996,
+                            }}
+                        />
+                        <motion.div
+                            key="rm-sheet"
+                            initial={{ y: "100%" }}
+                            animate={{ y: 0 }}
+                            exit={{ y: "100%" }}
+                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            drag="y"
+                            dragConstraints={{ top: 0, bottom: 0 }}
+                            dragElastic={0.2}
+                            onDragEnd={(_e, info) => {
+                                if (info.offset.y > 100) setMobileSheetOpen(false);
+                            }}
+                            style={{
+                                position: "fixed",
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                height: "65vh",
+                                background: "rgba(5,5,8,0.97)",
+                                borderTop: "1px solid rgba(255,69,0,0.3)",
+                                backdropFilter: "blur(20px)",
+                                zIndex: 9997,
+                                padding: "12px 20px 24px",
+                                overflowY: "auto",
+                                borderRadius: "20px 20px 0 0",
+                                display: "flex",
+                                flexDirection: "column",
                             }}
                         >
-                            <X size={18} />
-                        </button>
-                        <div style={{ flex: 1, overflowY: "auto" }}>
-                            <PanelContent
-                                activeSection={activeSection}
-                                scrollTo={(id) => {
-                                    scrollTo(id);
-                                    setMobileSheetOpen(false);
+                            {/* Drag handle */}
+                            <div style={{ display: "flex", justifyContent: "center", paddingBottom: 12 }}>
+                                <div
+                                    style={{
+                                        width: 40,
+                                        height: 4,
+                                        borderRadius: 2,
+                                        background: "rgba(255,255,255,0.2)",
+                                    }}
+                                />
+                            </div>
+                            {/* Close button — 44px touch target */}
+                            <button
+                                onClick={() => setMobileSheetOpen(false)}
+                                style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 8,
+                                    background: "none",
+                                    border: "none",
+                                    color: "rgba(255,255,255,0.5)",
+                                    cursor: "pointer",
+                                    padding: 10,
+                                    minWidth: 44,
+                                    minHeight: 44,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
                                 }}
-                            />
-                        </div>
-                    </motion.div>
+                            >
+                                <X size={18} />
+                            </button>
+                            <div style={{ flex: 1, overflowY: "auto" }}>
+                                <PanelContent
+                                    activeSection={activeSection}
+                                    scrollTo={(id) => {
+                                        scrollTo(id);
+                                        setMobileSheetOpen(false);
+                                    }}
+                                />
+                            </div>
+                        </motion.div>
+                    </>
                 )}
             </AnimatePresence>
 

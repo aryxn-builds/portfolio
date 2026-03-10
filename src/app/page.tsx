@@ -10,6 +10,7 @@ import { FloatingResumeButton } from "@/components/FloatingResumeButton";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { GlitchHeading } from "@/components/GlitchHeading";
 import RecruiterMode from "@/components/RecruiterMode";
+import GitHubActivityFeed from "@/components/GitHubActivityFeed";
 import { RecruiterModeProvider, useRecruiterMode } from "@/components/RecruiterModeContext";
 import { motion } from "framer-motion";
 import { Github, Linkedin, Mail, ExternalLink } from "lucide-react";
@@ -57,6 +58,9 @@ function HomeContent({ isMobile, isOrbitalActive, setIsOrbitalActive }: {
 
       {/* RECRUITER MODE TOGGLE + PANEL */}
       <RecruiterMode />
+
+      {/* GITHUB ACTIVITY FEED WIDGET */}
+      <GitHubActivityFeed />
 
       {/* Background Canvas Layer (No mouse values passed) */}
       <CanvasSequence isMobile={isMobile} />
