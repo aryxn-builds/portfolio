@@ -166,8 +166,23 @@ const TRACKS: Track[] = [
         status: "unlocked",
         size: 48,
         icon: "CC",
-        badge: "LATEST",
         certImage: "/certifications/Screenshot 2026-03-13 152321.png",
+      },
+      {
+        id: "anthropic-api",
+        label: "ANTHROPIC API",
+        fullName: "Claude with the Anthropic API",
+        platform: "Anthropic",
+        date: "March 13, 2026",
+        certId: "gbxfgv3tanj",
+        verifyUrl: "https://verify.skilljar.com/c/gbxfgv3tanj",
+        xp: 1000,
+        skills: ["Claude API", "REST API", "Integration", "Prompt Engineering", "API Development"],
+        status: "unlocked",
+        size: 48,
+        icon: "API",
+        badge: "NEW",
+        certImage: "/certifications/API.png",
       },
       {
         id: "langchain",
@@ -289,10 +304,10 @@ const TRACKS: Track[] = [
 ];
 
 const STATS = [
-  { label: "CERTS EARNED", value: 8 },
+  { label: "CERTS EARNED", value: 9 },
   { label: "COMPETITIONS", value: 2 },
   { label: "PLATFORMS", value: 5 },
-  { label: "TOTAL XP", value: 8200, separator: true },
+  { label: "TOTAL XP", value: 9200, separator: true },
 ];
 
 /* ─────────────────────────────────────────
@@ -838,7 +853,7 @@ export default function SkillTree() {
               marginBottom: 8,
             }}
           >
-            TOTAL XP: 8,200 · RANK: AI ENGINEER II
+            TOTAL XP: 9,200 · RANK: AI ENGINEER II
           </div>
           <div
             style={{
@@ -851,7 +866,7 @@ export default function SkillTree() {
           >
             <motion.div
               initial={{ width: 0 }}
-              whileInView={{ width: "72%" }}
+              whileInView={{ width: "78%" }}
               viewport={{ once: true }}
               transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
               style={{
