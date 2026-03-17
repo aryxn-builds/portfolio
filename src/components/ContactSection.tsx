@@ -236,6 +236,11 @@ export default function ContactSection() {
       className="min-h-[100vh] w-full flex flex-col items-center justify-center relative"
       style={{ background: "rgba(5,5,8,0.72)", backdropFilter: "blur(2px)" }}
     >
+      {/* Top fade */}
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '120px', background: 'linear-gradient(to bottom, #050508 0%, transparent 100%)', zIndex: 10, pointerEvents: 'none' }} />
+      {/* Bottom fade */}
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '200px', background: 'linear-gradient(to top, #050508 0%, transparent 100%)', zIndex: 10, pointerEvents: 'none' }} />
+
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes spin {
           from { transform: rotate(0deg) }

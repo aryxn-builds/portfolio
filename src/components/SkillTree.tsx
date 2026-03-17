@@ -808,6 +808,11 @@ export default function SkillTree() {
           background: "radial-gradient(ellipse at center, rgba(255,69,0,0.04) 0%, transparent 70%), #050508",
         }}
       >
+        {/* Top fade */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '160px', background: 'linear-gradient(to bottom, #050508 0%, transparent 100%)', zIndex: 10, pointerEvents: 'none' }} />
+        {/* Bottom fade */}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '160px', background: 'linear-gradient(to top, #050508 0%, transparent 100%)', zIndex: 10, pointerEvents: 'none' }} />
+
         {/* ── SECTION HEADING ── */}
         <motion.div
           initial={{ opacity: 0, y: -30 }}
