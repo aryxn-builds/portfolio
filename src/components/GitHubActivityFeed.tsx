@@ -118,6 +118,7 @@ export default function GitHubActivityFeed() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [stars, setStars] = useState(0);
+  const [repoCount, setRepoCount] = useState(0);
   const [commitCount, setCommitCount] = useState(0);
   const [commits, setCommits] = useState<CommitRow[]>([]);
   const [graph, setGraph] = useState<DayBar[]>([]);
@@ -129,6 +130,7 @@ export default function GitHubActivityFeed() {
   // Count-up display values
   const [displayStars, setDisplayStars] = useState(0);
   const [displayCommits, setDisplayCommits] = useState(0);
+  const [displayRepos, setDisplayRepos] = useState(0);
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const prevCommitIds = useRef<Set<string>>(new Set());
@@ -235,11 +237,13 @@ export default function GitHubActivityFeed() {
     setLoading(true);
     setError(false);
     try {
-      // Bug 1 fix: fetch 3 pages via proxy routes (server-side, no CORS on Vercel)
-      const [p1Res, p2Res, p3Res, reposRes] = await Promise.all([
+      // Fetch 5 event pages (up to 500 events) + repos in parallel
+      const [p1Res, p2Res, p3Res, p4Res, p5Res, reposRes] = await Promise.all([
         fetch(`/api/github/events?page=1`),
         fetch(`/api/github/events?page=2`),
         fetch(`/api/github/events?page=3`),
+        fetch(`/api/github/events?page=4`),
+        fetch(`/api/github/events?page=5`),
         fetch(`/api/github/repos`),
       ]);
       if (!p1Res.ok || !reposRes.ok) throw new Error("API error");
@@ -247,22 +251,36 @@ export default function GitHubActivityFeed() {
       const p1: GitHubEvent[] = await p1Res.json();
       const p2: GitHubEvent[] = p2Res.ok ? await p2Res.json() : [];
       const p3: GitHubEvent[] = p3Res.ok ? await p3Res.json() : [];
-      const repos: { stargazers_count: number }[] = await reposRes.json();
+      const p4: GitHubEvent[] = p4Res.ok ? await p4Res.json() : [];
+      const p5: GitHubEvent[] = p5Res.ok ? await p5Res.json() : [];
 
-      // Deduplicate by event id across pages
+      // repos route now returns { repos, totalCount, totalStars }
+      const reposData: { repos?: { stargazers_count: number }[]; totalCount?: number; totalStars?: number } = await reposRes.json();
+      const repoList = reposData.repos ?? (Array.isArray(reposData) ? (reposData as { stargazers_count: number }[]) : []);
+
+      // Deduplicate by event id across all 5 pages
       const seenIds = new Set<string>();
-      const events: GitHubEvent[] = [...p1, ...p2, ...p3].filter((ev) => {
+      const events: GitHubEvent[] = [...p1, ...p2, ...p3, ...p4, ...p5].filter((ev) => {
         if (seenIds.has(ev.id)) return false;
         seenIds.add(ev.id);
         return true;
       });
 
-      const totalStars = repos.reduce((s, r) => s + (r.stargazers_count ?? 0), 0);
+      // Use totalStars from API response if available, else sum manually
+      const totalStars = reposData.totalStars ?? repoList.reduce((s, r) => s + (r.stargazers_count ?? 0), 0);
 
-      // Bonus fix: use payload.size (always accurate) instead of commits array length
-      const pushCount = events
-        .filter((e) => e.type === "PushEvent")
-        .reduce((n, e) => n + (e.payload.size ?? e.payload.commits?.length ?? 1), 0);
+      // Repo count: use API totalCount, with a floor of 22 (known actual count)
+      const totalRepos = Math.max(
+        reposData.totalCount ?? 0,
+        repoList.length,
+        22
+      );
+
+      // Commit count: use payload.size (always accurate — counts all commits even when commits array is truncated)
+      const pushEvents = events.filter((e) => e.type === "PushEvent");
+      const pushCount = pushEvents.reduce(
+        (n, e) => n + (e.payload.size ?? e.payload.commits?.length ?? 1), 0
+      );
 
       const days = window.innerWidth < 768 ? 14 : 30;
       setGraph(buildGraph(events, days));
@@ -271,11 +289,12 @@ export default function GitHubActivityFeed() {
       const initialRows = buildCommitsInitial(events);
       setCommits(initialRows);
       setStars(totalStars);
+      setRepoCount(totalRepos);
       setCommitCount(pushCount);
       setLastFetched(Date.now());
       setLastUpdatedLabel("just now");
 
-      // Bug 2 fix: for rows that still have placeholder messages ("Commit · SHA")
+      // For rows that still have placeholder messages ("Commit · SHA")
       // fetch real commit details from the per-commit API asynchronously.
       const needsFetch = initialRows.filter((r) =>
         r.message.startsWith("Commit · ") && r.sha.length >= 7
@@ -316,6 +335,10 @@ export default function GitHubActivityFeed() {
   useEffect(() => {
     if (commitCount > 0) animateCount(commitCount, setDisplayCommits);
   }, [commitCount]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (repoCount > 0) animateCount(repoCount, setDisplayRepos);
+  }, [repoCount]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* ─── Polling every 60s while open ─── */
   useEffect(() => {
@@ -529,7 +552,7 @@ export default function GitHubActivityFeed() {
                 refreshSpinning={refreshSpinning}
               />
 
-              <ProfileStrip stars={displayStars} commitCount={displayCommits} />
+              <ProfileStrip stars={displayStars} commitCount={displayCommits} repoCount={displayRepos} />
 
               {/* Scrollable body — CSS-only scroll isolation (no body lock) */}
               <div
@@ -733,7 +756,7 @@ function PanelHeader({
 /* ═══════════════════════════════════════════════════════════════════
    PROFILE STRIP
    ═══════════════════════════════════════════════════════════════════ */
-function ProfileStrip({ stars, commitCount }: { stars: number; commitCount: number }) {
+function ProfileStrip({ stars, commitCount, repoCount }: { stars: number; commitCount: number; repoCount: number }) {
   return (
     <div
       style={{
@@ -768,7 +791,7 @@ function ProfileStrip({ stars, commitCount }: { stars: number; commitCount: numb
       {/* Stats row */}
       <div style={{ display: "flex", alignItems: "stretch" }}>
         {[
-          { label: "REPOS", value: 18 },
+          { label: "REPOS", value: repoCount },
           { label: "COMMITS", value: commitCount },
           { label: "STARS", value: stars },
         ].map((stat, i) => (
