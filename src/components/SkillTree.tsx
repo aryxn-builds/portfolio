@@ -185,6 +185,20 @@ const TRACKS: Track[] = [
         certImage: "/certifications/API.png",
       },
       {
+        id: "mcp",
+        label: "MCP",
+        fullName: "Introduction to Model Context Protocol",
+        platform: "Anthropic",
+        date: "June 2026",
+        xp: 800,
+        skills: ["Model Context Protocol", "MCP", "AI Tooling"],
+        status: "unlocked",
+        size: 48,
+        icon: "MCP",
+        badge: "NEW",
+        certImage: "/certifications/mcp_certificate.png",
+      },
+      {
         id: "langchain",
         label: "LANGCHAIN",
         fullName: "LangChain + RAG Mastery",
@@ -304,10 +318,10 @@ const TRACKS: Track[] = [
 ];
 
 const STATS = [
-  { label: "CERTS EARNED", value: 9 },
+  { label: "CERTS EARNED", value: 10 },
   { label: "COMPETITIONS", value: 2 },
   { label: "PLATFORMS", value: 5 },
-  { label: "TOTAL XP", value: 9200, separator: true },
+  { label: "TOTAL XP", value: 10000, separator: true },
 ];
 
 /* ─────────────────────────────────────────
