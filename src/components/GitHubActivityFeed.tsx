@@ -139,7 +139,8 @@ export default function GitHubActivityFeed() {
   const [refreshSpinning, setRefreshSpinning] = useState(false);
   const [tooltipBar, setTooltipBar] = useState<{ index: number; label: string; count: number } | null>(null);
   const [pinnedRepos, setPinnedRepos] = useState<PinnedRepo[]>([]);
-  const [pinnedError, setPinnedError] = useState(false);
+  const [pinnedLoading, setPinnedLoading] = useState(false);
+  const [pinnedError, setPinnedError] = useState<string | null>(null);
 
   // Count-up display values
   const [displayStars, setDisplayStars] = useState(0);
@@ -245,36 +246,49 @@ export default function GitHubActivityFeed() {
     return rows.slice(0, 10);
   }
 
+  /* ─── FETCH PINNED REPOS (independent — own loading state) ─── */
+  const fetchPinnedRepos = useCallback(async () => {
+    setPinnedLoading(true);
+    setPinnedError(null);
+    try {
+      const res = await fetch('/api/github/pinned', { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (data.error) {
+        setPinnedError(data.error);
+        setPinnedRepos([]);
+      } else {
+        setPinnedRepos(data.repos || []);
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to load';
+      setPinnedError(msg);
+      setPinnedRepos([]);
+    } finally {
+      setPinnedLoading(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   /* ─── FETCH ─── */
   const fetchData = useCallback(async (force = false) => {
     if (!force && lastFetched !== null && Date.now() - lastFetched < 5 * 60 * 1000) return;
     setLoading(true);
     setError(false);
     try {
-      // Fetch 5 event pages (up to 500 events) + repos + pinned in parallel
-      const [p1Res, p2Res, p3Res, p4Res, p5Res, reposRes, pinnedRes] = await Promise.all([
+      // Fetch 5 event pages (up to 500 events) + repos in parallel
+      const [p1Res, p2Res, p3Res, p4Res, p5Res, reposRes] = await Promise.all([
         fetch(`/api/github/events?page=1`),
         fetch(`/api/github/events?page=2`),
         fetch(`/api/github/events?page=3`),
         fetch(`/api/github/events?page=4`),
         fetch(`/api/github/events?page=5`),
         fetch(`/api/github/repos`),
-        fetch(`/api/github/pinned`),
       ]);
       if (!p1Res.ok || !reposRes.ok) throw new Error("API error");
 
-      // Pinned repos (soft-fail: don't block main feed)
-      if (pinnedRes.ok) {
-        try {
-          const pinnedData = await pinnedRes.json();
-          setPinnedRepos(pinnedData.repos || []);
-          setPinnedError(false);
-        } catch {
-          setPinnedError(true);
-        }
-      } else {
-        setPinnedError(true);
-      }
+      // Pinned repos fetched independently — don't block main feed
+      fetchPinnedRepos();
 
       const p1: GitHubEvent[] = await p1Res.json();
       const p2: GitHubEvent[] = p2Res.ok ? await p2Res.json() : [];
@@ -605,7 +619,7 @@ export default function GitHubActivityFeed() {
                 )}
                 <PinnedReposList
                   repos={pinnedRepos}
-                  loading={loading}
+                  loading={pinnedLoading}
                   error={pinnedError}
                 />
                 <CommitsList
@@ -976,7 +990,7 @@ function PinnedReposList({
 }: {
   repos: PinnedRepo[];
   loading: boolean;
-  error: boolean;
+  error: string | null;
 }) {
   return (
     <div

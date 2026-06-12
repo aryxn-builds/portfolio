@@ -1,47 +1,23 @@
 import { NextResponse } from 'next/server';
 
+export const revalidate = 300;
+
 export async function GET() {
+  const token = process.env.GITHUB_TOKEN;
+  const isDev = process.env.NODE_ENV === 'development';
+
+  const cacheHeader = isDev
+    ? 'no-store'
+    : 's-maxage=300, stale-while-revalidate=600';
+
+  if (!token) {
+    return NextResponse.json(
+      { repos: [], error: 'No token' },
+      { status: 200, headers: { 'Cache-Control': 'no-store' } }
+    );
+  }
+
   try {
-    const token = process.env.GITHUB_TOKEN;
-
-    if (!token) {
-      return NextResponse.json(
-        { error: 'No GitHub token configured', repos: [] },
-        { status: 401 }
-      );
-    }
-
-    const query = `
-      {
-        user(login: "aryxn-builds") {
-          pinnedItems(first: 6, types: REPOSITORY) {
-            nodes {
-              ... on Repository {
-                name
-                description
-                url
-                stargazerCount
-                forkCount
-                isPrivate
-                updatedAt
-                primaryLanguage {
-                  name
-                  color
-                }
-                repositoryTopics(first: 5) {
-                  nodes {
-                    topic {
-                      name
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    `;
-
     const response = await fetch('https://api.github.com/graphql', {
       method: 'POST',
       headers: {
@@ -49,29 +25,60 @@ export async function GET() {
         'Content-Type': 'application/json',
         'User-Agent': 'aryxn-portfolio',
       },
-      body: JSON.stringify({ query }),
-      next: { revalidate: 300 },
+      body: JSON.stringify({
+        query: `{
+          user(login: "aryxn-builds") {
+            pinnedItems(first: 6, types: REPOSITORY) {
+              nodes {
+                ... on Repository {
+                  name
+                  description
+                  url
+                  stargazerCount
+                  forkCount
+                  isPrivate
+                  updatedAt
+                  primaryLanguage {
+                    name
+                    color
+                  }
+                  repositoryTopics(first: 4) {
+                    nodes {
+                      topic { name }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }`,
+      }),
+      // Do NOT pass next.revalidate here — use the export const above
+      cache: isDev ? 'no-store' : 'default',
     });
 
-    if (!response.ok) {
-      throw new Error('GraphQL request failed');
+    const json = await response.json();
+
+    if (json.errors) {
+      console.error('GraphQL errors:', json.errors);
+      return NextResponse.json(
+        { repos: [], error: json.errors[0].message },
+        { status: 200, headers: { 'Cache-Control': cacheHeader } }
+      );
     }
 
-    const data = await response.json();
+    const repos = json?.data?.user?.pinnedItems?.nodes ?? [];
 
-    if (data.errors) {
-      throw new Error(data.errors[0].message);
-    }
-
-    const pinnedRepos = data?.data?.user?.pinnedItems?.nodes || [];
-
-    return NextResponse.json({
-      repos: pinnedRepos,
-      count: pinnedRepos.length,
-      fetchedAt: new Date().toISOString(),
-    });
+    return NextResponse.json(
+      { repos, count: repos.length },
+      { status: 200, headers: { 'Cache-Control': cacheHeader } }
+    );
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
-    return NextResponse.json({ error: message, repos: [] }, { status: 500 });
+    console.error('Pinned fetch error:', message);
+    return NextResponse.json(
+      { repos: [], error: message },
+      { status: 200, headers: { 'Cache-Control': 'no-store' } }
+    );
   }
 }
