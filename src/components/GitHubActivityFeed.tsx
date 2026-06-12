@@ -7,7 +7,7 @@ import React, {
   useCallback,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Github, X, RefreshCw, ExternalLink } from "lucide-react";
+import { Github, X, RefreshCw, ExternalLink, Pin, GitFork, Star } from "lucide-react";
 
 /* ═══════════════════════════════════════════════════════════════════
    TYPES
@@ -52,6 +52,18 @@ interface CommitRow {
   sha: string;
   time: string;
   isNew?: boolean;
+}
+
+interface PinnedRepo {
+  name: string;
+  description: string | null;
+  url: string;
+  stargazerCount: number;
+  forkCount: number;
+  isPrivate: boolean;
+  updatedAt: string;
+  primaryLanguage: { name: string; color: string } | null;
+  repositoryTopics: { nodes: { topic: { name: string } }[] };
 }
 
 interface DayBar {
@@ -126,6 +138,8 @@ export default function GitHubActivityFeed() {
   const [lastUpdatedLabel, setLastUpdatedLabel] = useState("just now");
   const [refreshSpinning, setRefreshSpinning] = useState(false);
   const [tooltipBar, setTooltipBar] = useState<{ index: number; label: string; count: number } | null>(null);
+  const [pinnedRepos, setPinnedRepos] = useState<PinnedRepo[]>([]);
+  const [pinnedError, setPinnedError] = useState(false);
 
   // Count-up display values
   const [displayStars, setDisplayStars] = useState(0);
@@ -237,16 +251,30 @@ export default function GitHubActivityFeed() {
     setLoading(true);
     setError(false);
     try {
-      // Fetch 5 event pages (up to 500 events) + repos in parallel
-      const [p1Res, p2Res, p3Res, p4Res, p5Res, reposRes] = await Promise.all([
+      // Fetch 5 event pages (up to 500 events) + repos + pinned in parallel
+      const [p1Res, p2Res, p3Res, p4Res, p5Res, reposRes, pinnedRes] = await Promise.all([
         fetch(`/api/github/events?page=1`),
         fetch(`/api/github/events?page=2`),
         fetch(`/api/github/events?page=3`),
         fetch(`/api/github/events?page=4`),
         fetch(`/api/github/events?page=5`),
         fetch(`/api/github/repos`),
+        fetch(`/api/github/pinned`),
       ]);
       if (!p1Res.ok || !reposRes.ok) throw new Error("API error");
+
+      // Pinned repos (soft-fail: don't block main feed)
+      if (pinnedRes.ok) {
+        try {
+          const pinnedData = await pinnedRes.json();
+          setPinnedRepos(pinnedData.repos || []);
+          setPinnedError(false);
+        } catch {
+          setPinnedError(true);
+        }
+      } else {
+        setPinnedError(true);
+      }
 
       const p1: GitHubEvent[] = await p1Res.json();
       const p2: GitHubEvent[] = p2Res.ok ? await p2Res.json() : [];
@@ -575,6 +603,11 @@ export default function GitHubActivityFeed() {
                     onHoverBar={setTooltipBar}
                   />
                 )}
+                <PinnedReposList
+                  repos={pinnedRepos}
+                  loading={loading}
+                  error={pinnedError}
+                />
                 <CommitsList
                   commits={commits}
                   loading={loading}
@@ -921,6 +954,283 @@ function ContributionGraph({
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PINNED REPOSITORIES
+   ═══════════════════════════════════════════════════════════════════ */
+function relativeUpdated(iso: string): string {
+  const days = Math.floor((Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24));
+  if (days === 0) return "Today";
+  if (days === 1) return "Yesterday";
+  if (days < 30) return `${days}d ago`;
+  return `${Math.floor(days / 30)}mo ago`;
+}
+
+function PinnedReposList({
+  repos,
+  loading,
+  error,
+}: {
+  repos: PinnedRepo[];
+  loading: boolean;
+  error: boolean;
+}) {
+  return (
+    <div
+      style={{
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        paddingBottom: 4,
+      }}
+    >
+      {/* Section label */}
+      <div
+        style={{
+          padding: "14px 20px 10px",
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+        }}
+      >
+        <Pin size={10} style={{ color: "#FF4500", flexShrink: 0 }} />
+        <span
+          style={{
+            fontFamily: "monospace",
+            fontSize: "0.6rem",
+            color: "#FF4500",
+            letterSpacing: "0.15em",
+          }}
+        >
+          PINNED REPOSITORIES
+        </span>
+        {!loading && !error && (
+          <span
+            style={{
+              background: "rgba(255,69,0,0.15)",
+              border: "0.5px solid rgba(255,69,0,0.4)",
+              borderRadius: 20,
+              padding: "1px 7px",
+              fontFamily: "monospace",
+              fontSize: "0.55rem",
+              color: "#FF4500",
+            }}
+          >
+            {repos.length} pinned
+          </span>
+        )}
+      </div>
+
+      {/* Loading skeletons */}
+      {loading && (
+        <div style={{ padding: "0 20px", display: "flex", flexDirection: "column", gap: 8, marginBottom: 12 }}>
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              style={{
+                height: 80,
+                borderRadius: 10,
+                background: "linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 100%)",
+                backgroundSize: "400px 100%",
+                animation: "ghShimmer 1.4s ease-in-out infinite",
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Error state */}
+      {!loading && error && (
+        <div style={{ padding: "8px 20px 12px", display: "flex", alignItems: "center", gap: 8 }}>
+          <Pin size={12} style={{ color: "rgba(255,255,255,0.15)", flexShrink: 0 }} />
+          <span style={{ fontFamily: "monospace", fontSize: "0.65rem", color: "rgba(255,255,255,0.3)" }}>
+            Configure GITHUB_TOKEN in Vercel environment variables
+          </span>
+        </div>
+      )}
+
+      {/* Empty state */}
+      {!loading && !error && repos.length === 0 && (
+        <div style={{ padding: "8px 20px 12px", display: "flex", flexDirection: "column", gap: 4 }}>
+          <span style={{ fontFamily: "monospace", fontSize: "0.65rem", color: "rgba(255,255,255,0.3)" }}>
+            No pinned repositories found.
+          </span>
+          <a
+            href="https://github.com/aryxn-builds"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ fontFamily: "monospace", fontSize: "0.6rem", color: "rgba(0,191,255,0.6)", textDecoration: "none" }}
+          >
+            Pin repos on GitHub to show here ↗
+          </a>
+        </div>
+      )}
+
+      {/* Repo cards */}
+      {!loading && !error && repos.length > 0 && (
+        <div
+          style={{
+            padding: "0 20px",
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+            marginBottom: 12,
+          }}
+        >
+          {repos.map((repo) => (
+            <div
+              key={repo.name}
+              onClick={() => window.open(repo.url, "_blank")}
+              style={{
+                background: "rgba(255,255,255,0.02)",
+                border: "0.5px solid rgba(255,69,0,0.2)",
+                borderRadius: 10,
+                padding: "12px 14px",
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }}
+              onMouseOver={(e) => {
+                const el = e.currentTarget as HTMLDivElement;
+                el.style.background = "rgba(255,69,0,0.06)";
+                el.style.borderColor = "rgba(255,69,0,0.45)";
+                el.style.transform = "translateX(3px)";
+              }}
+              onMouseOut={(e) => {
+                const el = e.currentTarget as HTMLDivElement;
+                el.style.background = "rgba(255,255,255,0.02)";
+                el.style.borderColor = "rgba(255,69,0,0.2)";
+                el.style.transform = "translateX(0)";
+              }}
+            >
+              {/* Top row */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
+                  <span
+                    style={{
+                      fontFamily: "monospace",
+                      fontSize: "0.75rem",
+                      color: "white",
+                      fontWeight: 500,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {repo.name}
+                  </span>
+                  {repo.isPrivate && (
+                    <span
+                      style={{
+                        background: "rgba(255,255,255,0.05)",
+                        border: "0.5px solid rgba(255,255,255,0.1)",
+                        borderRadius: 4,
+                        padding: "1px 5px",
+                        fontFamily: "monospace",
+                        fontSize: "0.5rem",
+                        color: "rgba(255,255,255,0.3)",
+                        flexShrink: 0,
+                      }}
+                    >
+                      PRIVATE
+                    </span>
+                  )}
+                </div>
+                {repo.primaryLanguage && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
+                    <div
+                      style={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: "50%",
+                        background: repo.primaryLanguage.color || "rgba(255,255,255,0.3)",
+                        flexShrink: 0,
+                      }}
+                    />
+                    <span
+                      style={{
+                        fontFamily: "monospace",
+                        fontSize: "0.6rem",
+                        color: "rgba(255,255,255,0.4)",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {repo.primaryLanguage.name}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Description */}
+              {repo.description && (
+                <div
+                  style={{
+                    marginTop: 5,
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: "0.72rem",
+                    color: "rgba(255,255,255,0.45)",
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {repo.description}
+                </div>
+              )}
+
+              {/* Topics */}
+              {repo.repositoryTopics.nodes.length > 0 && (
+                <div style={{ marginTop: 7, display: "flex", flexWrap: "wrap", gap: 4 }}>
+                  {repo.repositoryTopics.nodes.slice(0, 3).map(({ topic }) => (
+                    <span
+                      key={topic.name}
+                      style={{
+                        background: "rgba(0,191,255,0.08)",
+                        border: "0.5px solid rgba(0,191,255,0.2)",
+                        borderRadius: 20,
+                        padding: "2px 8px",
+                        fontFamily: "monospace",
+                        fontSize: "0.55rem",
+                        color: "rgba(0,191,255,0.7)",
+                      }}
+                    >
+                      {topic.name}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {/* Bottom row */}
+              <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                  <Star size={10} style={{ color: "rgba(255,255,255,0.3)" }} />
+                  <span style={{ fontFamily: "monospace", fontSize: "0.6rem", color: "rgba(255,255,255,0.35)" }}>
+                    {repo.stargazerCount}
+                  </span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                  <GitFork size={10} style={{ color: "rgba(255,255,255,0.3)" }} />
+                  <span style={{ fontFamily: "monospace", fontSize: "0.6rem", color: "rgba(255,255,255,0.35)" }}>
+                    {repo.forkCount}
+                  </span>
+                </div>
+                <span
+                  style={{
+                    marginLeft: "auto",
+                    fontFamily: "monospace",
+                    fontSize: "0.6rem",
+                    color: "rgba(255,255,255,0.25)",
+                  }}
+                >
+                  Updated {relativeUpdated(repo.updatedAt)}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
