@@ -34,6 +34,7 @@ export async function GET() {
                   name
                   description
                   url
+                  homepageUrl
                   stargazerCount
                   forkCount
                   isPrivate
@@ -42,7 +43,7 @@ export async function GET() {
                     name
                     color
                   }
-                  repositoryTopics(first: 4) {
+                  repositoryTopics(first: 6) {
                     nodes {
                       topic { name }
                     }
