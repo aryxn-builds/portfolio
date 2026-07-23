@@ -80,6 +80,24 @@ const TRACKS: Track[] = [
         certImage: "/certifications/Udemy ML.jpg",
       },
       {
+        id: "pytorch",
+        label: "PYTORCH",
+        fullName: "PyTorch for Deep Learning Bootcamp",
+        platform: "Udemy",
+        date: "July 23, 2026",
+        duration: "52 hours",
+        xp: 1800,
+        skills: ["PyTorch", "Deep Learning", "Neural Networks", "CNNs", "Transfer Learning"],
+        status: "unlocked",
+        size: 52,
+        icon: "PT",
+        badge: "NEW",
+        certImage: "/certifications/pyTorch certificate.jpg",
+        verifyUrl: "https://ude.my/UC-979bc532-2366-4f74-911f-ae8d4c5fc603",
+        certId: "UC-979bc532-2366-4f74-911f-ae8d4c5fc603",
+        organizer: "Andrei Neagoie · Daniel Bourke",
+      },
+      {
         id: "ai-tools",
         label: "AI TOOLS",
         fullName: "AI Tools Skill Up",
@@ -285,15 +303,7 @@ const TRACKS: Track[] = [
         status: "locked",
         size: 44,
       },
-      {
-        id: "pytorch",
-        label: "PYTORCH",
-        fullName: "PyTorch Deep Learning",
-        platform: "(planned)",
-        xp: 1500,
-        status: "locked",
-        size: 44,
-      },
+
       {
         id: "cloud-ml",
         label: "CLOUD ML",
@@ -318,10 +328,10 @@ const TRACKS: Track[] = [
 ];
 
 const STATS = [
-  { label: "CERTS EARNED", value: 10 },
+  { label: "CERTS EARNED", value: 11 },
   { label: "COMPETITIONS", value: 2 },
   { label: "PLATFORMS", value: 5 },
-  { label: "TOTAL XP", value: 10000, separator: true },
+  { label: "TOTAL XP", value: 11800, separator: true },
 ];
 
 /* ─────────────────────────────────────────
@@ -872,7 +882,7 @@ export default function SkillTree() {
               marginBottom: 8,
             }}
           >
-            TOTAL XP: 9,200 · RANK: AI ENGINEER II
+            TOTAL XP: 11,800 · RANK: AI ENGINEER II
           </div>
           <div
             style={{
