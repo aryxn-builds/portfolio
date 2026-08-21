@@ -25,7 +25,7 @@ function Counter({ from, to, duration = 1.5 }: { from: number; to: number; durat
 const BIO_PARAGRAPHS = [
     (
         <React.Fragment key="1">
-            I'm Aryan Yadav — a 3rd year B.Tech student obsessed with building machines that think. My journey started with a simple question: what if software could learn from the world instead of just following instructions?
+            I'm Aryan Yadav — a 4th year B.Tech student obsessed with building machines that think. My journey started with a simple question: what if software could learn from the world instead of just following instructions?
         </React.Fragment>
     ),
     (

@@ -19,7 +19,7 @@ const SECTIONS = [
 const SKILLS = ["Python", "TensorFlow", "OpenCV", "PyTorch", "MediaPipe", "Keras"];
 
 const STATS = [
-    { icon: "🎓", text: "B.Tech 3rd Year · 2023→Now" },
+    { icon: "🎓", text: "B.Tech 4th Year · 2023→Now" },
     { icon: "💻", text: "15+ Projects Built" },
     { icon: "🛠️", text: "30+ Technologies" },
     { icon: "📍", text: "India · Open to Remote" },
