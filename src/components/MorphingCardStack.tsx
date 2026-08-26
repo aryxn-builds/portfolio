@@ -18,12 +18,12 @@ function cn(...inputs: ClassValue[]) {
 const STATIC_CARDS = [
     {
         id: "1",
-        title: "Customer Churn Prediction (ANN)",
-        description: "Predicts customer churn using an Artificial Neural Network built with TensorFlow/Keras, deployed as an interactive Streamlit web app.",
+        title: "DocuMind AI",
+        description: "Full-stack AI platform supporting PDF, DOCX, and image uploads with semantic search and citation-grounded conversational QA. Built with multimodal RAG pipeline, structure-aware chunking, and SentenceTransformers embeddings with Qdrant retrieval.",
         icon: Brain,
-        tags: ["TensorFlow", "Keras", "Streamlit"],
-        link: "https://github.com/aryxn-builds/ANN-Chrun-Project",
-        liveUrl: null as string | null,
+        tags: ["Next.js", "FastAPI", "Python", "Qdrant", "Supabase", "Gemini", "Groq", "RAG"],
+        link: "https://github.com/aryxn-builds/DocuMind-AI",
+        liveUrl: "https://documind-ai-alpha-six.vercel.app/" as string | null,
         stars: 0,
         forks: 0,
         language: null as string | null,
@@ -32,26 +32,26 @@ const STATIC_CARDS = [
     },
     {
         id: "2",
-        title: "IMDB Sentiment Classifier (RNN)",
-        description: "Binary sentiment classification on IMDB movie reviews using a Recurrent Neural Network with embedding and SimpleRNN layers.",
+        title: "Insurance Premium Prediction API",
+        description: "FastAPI microservice that classifies insurance premium categories (Low/Medium/High) from user demographic and lifestyle data, returning confidence scores and full class-probability breakdown with Docker deployment.",
         icon: Activity,
-        tags: ["TensorFlow", "Keras", "Scikit-Learn"],
-        link: "https://github.com/aryxn-builds/IMDB-Sentiment-Classification-using-Recurrent-Neural-Networks",
+        tags: ["Python", "FastAPI", "Scikit-learn", "Docker", "Pydantic", "ML"],
+        link: "https://github.com/aryxn-builds/insurance-premium-prediction-fastapi",
         liveUrl: null as string | null,
         stars: 0,
         forks: 0,
         language: null as string | null,
-        languageColor: '#FF4500',
+        languageColor: '#00BFFF',
         linkLabel: "ACCESS REPOSITORY ↗"
     },
     {
         id: "3",
-        title: "Trader Profitability Predictor",
-        description: "Neural network model predicting trader profitability based on trade frequency, size, and market sentiment, deployed via Streamlit.",
+        title: "IMDB Sentiment Classifier",
+        description: "Recurrent Neural Network for binary sentiment classification on 50K IMDB movie reviews reaching ~82% validation accuracy. Built with TensorFlow/Keras using Embedding → SimpleRNN → Dense/Sigmoid.",
         icon: Layers,
-        tags: ["TensorFlow", "Streamlit", "Pandas"],
-        link: "https://github.com/aryxn-builds/trader-profit-prediction",
-        liveUrl: null as string | null,
+        tags: ["Python", "TensorFlow", "Keras", "NLP", "RNN", "Streamlit"],
+        link: "https://github.com/aryxn-builds/IMDB-Sentiment-Classification-using-Recurrent-Neural-Networks",
+        liveUrl: "https://imdb-sentiment-classification.streamlit.app/" as string | null,
         stars: 0,
         forks: 0,
         language: null as string | null,
@@ -60,30 +60,16 @@ const STATIC_CARDS = [
     },
     {
         id: "4",
-        title: "Pose-Based Movement Analysis",
-        description: "Cricket player movement analysis using MediaPipe Pose estimation — tracks hip, knee and ankle keypoints to compute knee angle metrics.",
+        title: "Customer Churn Prediction",
+        description: "Artificial Neural Network trained on Bank Customer Churn dataset reaching ~86% validation accuracy. Deployed as interactive Streamlit app returning real-time churn probability scores from user input.",
         icon: Eye,
-        tags: ["MediaPipe", "OpenCV", "Python"],
-        link: "https://github.com/aryxn-builds/-pose-based-movement-analysis",
-        liveUrl: null as string | null,
+        tags: ["Python", "TensorFlow", "Keras", "ANN", "Streamlit", "Pandas"],
+        link: "https://github.com/aryxn-builds/ANN-Chrun-Project",
+        liveUrl: "https://ann-chrun-09.streamlit.app/" as string | null,
         stars: 0,
         forks: 0,
         language: null as string | null,
-        languageColor: '#FF4500',
-        linkLabel: "ACCESS REPOSITORY ↗"
-    },
-    {
-        id: "5",
-        title: "YOLO Object Detection Lab",
-        description: "Hands-on exploration of YOLO (You Only Look Once) for real-time object detection with custom weights and training pipelines.",
-        icon: Grid,
-        tags: ["YOLO", "OpenCV", "Python"],
-        link: "https://github.com/aryxn-builds/YOLO-Learning",
-        liveUrl: null as string | null,
-        stars: 0,
-        forks: 0,
-        language: null as string | null,
-        languageColor: '#FF4500',
+        languageColor: '#00BFFF',
         linkLabel: "ACCESS REPOSITORY ↗"
     }
 ];
@@ -288,7 +274,9 @@ export default function MorphingCardStack() {
                 const data = await res.json();
 
                 if (data.repos && data.repos.length > 0) {
-                    const mapped: ProjectCard[] = data.repos.map(
+                    // Cap at 5 pinned repos maximum
+                    const limited = data.repos.slice(0, 5);
+                    const mapped: ProjectCard[] = limited.map(
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         (repo: any, index: number) => {
                             const rawTags: string[] =
