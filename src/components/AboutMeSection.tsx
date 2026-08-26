@@ -25,39 +25,39 @@ function Counter({ from, to, duration = 1.5 }: { from: number; to: number; durat
 const BIO_PARAGRAPHS = [
     (
         <React.Fragment key="1">
-            I'm Aryan Yadav — a 4th year B.Tech student obsessed with building machines that think. My journey started with a simple question: what if software could learn from the world instead of just following instructions?
+            I&apos;m Aryan Yadav, a 4th-year B.Tech CSE student at IEC College of Engineering &amp; Technology, Greater Noida. I specialize in <span className="text-[#FF4500]">Machine Learning</span>, <span className="text-[#00BFFF]">Generative AI</span>, and <span className="text-[#FF4500]">Computer Vision</span> — building AI systems that are practical, deployable, and real.
         </React.Fragment>
     ),
     (
         <React.Fragment key="2">
-            I specialize in <span className="text-[#FF4500]">Machine Learning</span>, <span className="text-[#00BFFF]">Generative AI</span>, and <span className="text-[#FF4500]">Computer Vision</span> — building systems that see, understand, and create. From training <span className="text-[#00BFFF]">neural networks</span> to deploying real-time CV pipelines, I turn ideas into intelligent systems.
+            From <span className="text-[#00BFFF]">RAG pipelines</span> and vector databases to <span className="text-[#FF4500]">agentic systems</span> and LLM integrations, I work across the full AI stack. I&apos;ve built production-ready applications using FastAPI, Next.js, Streamlit, Docker, and Supabase — shipping things that actually work.
         </React.Fragment>
     ),
     (
         <React.Fragment key="3">
-            When I'm not training models, I'm exploring the intersection of AI and human experience — how intelligent systems can augment creativity, automate complexity, and solve problems that matter at scale.
+            I&apos;m actively targeting <span className="text-[#00BFFF]">GenAI/LLM Engineer</span> roles. Open to internships and collaborations where I can build intelligence that matters.
         </React.Fragment>
     )
 ];
 
 const TIMELINE_POINTS = [
     { year: "2023", label: "Started B.Tech", color: "orange" },
-    { year: "2024", label: "First ML model & Python", color: "blue" },
-    { year: "2025", label: "Built CV & GenAI Apps", color: "orange" },
-    { year: "NOW", label: "Building Future Systems", color: "blue", isLive: true }
+    { year: "2024", label: "First ML models deployed", color: "blue" },
+    { year: "2025", label: "Built CV + GenAI + RAG apps", color: "orange" },
+    { year: "NOW", label: "Building Agentic AI Systems", color: "blue", isLive: true }
 ];
 
 const STATS = [
     { number: 15, suffix: "+", label: "Projects Built", icon: Code, theme: "orange" as const },
-    { number: 30, suffix: "+", label: "Technologies", icon: Cpu, theme: "blue" as const },
+    { number: 35, suffix: "+", label: "Technologies", icon: Cpu, theme: "blue" as const },
     { number: 500, suffix: "+", label: "GitHub Commits", icon: GitBranch, theme: "orange" as const },
-    { number: 3, suffix: "rd", label: "Year B.Tech", icon: GraduationCap, theme: "blue" as const, noCount: true } // "3rd" is hard to count up cleanly as a string, we'll handle specifically
+    { number: 4, suffix: "th", label: "Year B.Tech", icon: GraduationCap, theme: "blue" as const, noCount: true } // "4th" is hard to count up cleanly as a string, we'll handle specifically
 ];
 
 const CURRENTLY_BUILDING = [
-    "Fine-tuning LLaMA for Hindi NLP",
-    "Real-time gesture control system",
-    "Generative AI art pipeline"
+    "DocuMind AI — RAG Platform",
+    "Agentic Disaster Response System",
+    "Blazion.io"
 ];
 
 export default function AboutMeSection() {

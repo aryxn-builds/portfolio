@@ -9,7 +9,7 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 import { Tilt } from "./ui/tilt";
 import { Spotlight } from "./ui/spotlight";
 import { Card3D } from "./ui/Card3D";
-import { Code, Eye, Brain, Database, Terminal } from "lucide-react";
+import { Code, Eye, Brain, Database, Terminal, Cpu, Globe } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,42 +17,55 @@ gsap.registerPlugin(ScrollTrigger);
 
 const CLUSTERS = [
     {
-        id: "web", coreName: "Code", color: "#00BFFF",
-        position: [-4.5, 1.5, 0] as [number, number, number],
-        children: ["Python", "Java", "HTML", "CSS", "JavaScript", "SQL"],
+        id: "languages", coreName: "LANGUAGES", color: "#00BFFF",
+        position: [-5, 2.5, 0] as [number, number, number],
+        children: ["Python", "SQL", "JavaScript", "HTML/CSS", "Bash"],
         desc: "Languages bridging logic and the web."
     },
     {
-        id: "vision", coreName: "Vision", color: "#FF6600",
-        position: [4, 2.5, 0] as [number, number, number],
-        children: ["OpenCV", "YOLO", "MediaPipe", "CVZone"],
-        desc: "Teaching machines to see."
-    },
-    {
-        id: "ml", coreName: "Intelligence", color: "#A855F7",
-        position: [0, -0.5, 2] as [number, number, number],
-        children: ["TensorFlow", "Scikit-Learn", "NLP", "Keras", "TensorBoard", "CNN", "RNN", "LSTM", "GRU"],
+        id: "ml", coreName: "AI / ML", color: "#CC44FF",
+        position: [0, 3, 1] as [number, number, number],
+        children: ["TensorFlow", "Keras", "Scikit-learn", "PyTorch", "ANN", "CNN", "RNN", "LSTM", "GRU"],
         desc: "Architectures that learn and adapt."
     },
     {
-        id: "data", coreName: "Data", color: "#00FFFF",
-        position: [-4, -2.5, 0] as [number, number, number],
-        children: ["Pandas", "NumPy", "Matplotlib"],
+        id: "genai", coreName: "GENAI & LLMs", color: "#FF4500",
+        position: [5, 2.5, 0] as [number, number, number],
+        children: ["LangChain", "HuggingFace", "Transformers", "RAG", "Embeddings", "Prompt Engineering", "LLM APIs", "MCP"],
+        desc: "Building with large language models."
+    },
+    {
+        id: "cv-nlp", coreName: "CV & NLP", color: "#00E5FF",
+        position: [-4.5, -1.5, 0] as [number, number, number],
+        children: ["OpenCV", "YOLOv8", "MediaPipe", "TF-IDF", "NLTK", "Tokenization", "Text Classification"],
+        desc: "Teaching machines to see and understand."
+    },
+    {
+        id: "vectordb", coreName: "VECTOR DBS", color: "#00FF88",
+        position: [0, -2.5, 1] as [number, number, number],
+        children: ["FAISS", "Qdrant", "ChromaDB"],
+        desc: "Semantic search and retrieval."
+    },
+    {
+        id: "data", coreName: "DATA", color: "#FFD700",
+        position: [4.5, -1.5, 0] as [number, number, number],
+        children: ["Pandas", "NumPy", "Matplotlib", "Feature Engineering", "Data Preprocessing"],
         desc: "Extracting meaning from noise."
     },
     {
-        id: "devops", coreName: "DevOps", color: "#39FF14",
-        position: [4, -2.5, 0] as [number, number, number],
-        children: ["Streamlit", "Git", "GitHub"],
+        id: "tools", coreName: "TOOLS", color: "#FF6030",
+        position: [-1, -4, 0] as [number, number, number],
+        children: ["FastAPI", "Streamlit", "Docker", "Git / GitHub", "Vercel", "Supabase", "Render", "Next.js"],
         desc: "Shipping intelligence to the world."
     }
 ];
 
 const CROSS_LINES = [
-    ["OpenCV", "NumPy"], ["YOLO", "Keras"], ["NLP", "LSTM"],
-    ["Scikit-Learn", "Pandas"], ["Streamlit", "Matplotlib"],
-    ["GitHub", "Git"], ["TensorBoard", "Keras"], ["CNN", "OpenCV"],
-    ["GRU", "RNN"], ["RNN", "LSTM"]
+    ["OpenCV", "NumPy"], ["YOLOv8", "Keras"], ["NLTK", "LSTM"],
+    ["Scikit-learn", "Pandas"], ["Streamlit", "Matplotlib"],
+    ["LangChain", "RAG"], ["Qdrant", "Embeddings"], ["CNN", "OpenCV"],
+    ["GRU", "RNN"], ["RNN", "LSTM"], ["FastAPI", "Docker"],
+    ["HuggingFace", "Transformers"], ["FAISS", "RAG"]
 ];
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
@@ -453,44 +466,78 @@ function Scene({ visible }: { visible: boolean }) {
 
 function getClusterIcon(id: string) {
     switch (id) {
-        case "web": return Code;
-        case "vision": return Eye;
+        case "languages": return Code;
         case "ml": return Brain;
-        case "data": return Database;
-        case "devops": return Terminal;
+        case "genai": return Cpu;
+        case "cv-nlp": return Eye;
+        case "vectordb": return Database;
+        case "data": return Globe;
+        case "tools": return Terminal;
         default: return Brain;
     }
 }
 
+const MOBILE_PROFICIENCY: Record<string, Record<string, number>> = {
+    "languages": { "Python": 95, "SQL": 70, "JavaScript": 65, "HTML/CSS": 75 },
+    "ml": { "TensorFlow": 85, "Keras": 85, "Scikit-learn": 80, "PyTorch": 70, "LSTM/GRU": 75, "CNN": 80 },
+    "genai": { "LangChain": 80, "HuggingFace": 75, "RAG": 80, "Prompt Engineering": 85, "MCP": 70 },
+    "cv-nlp": { "OpenCV": 90, "YOLOv8": 80, "MediaPipe": 85, "NLTK": 70 },
+    "vectordb": { "Qdrant": 80, "FAISS": 75, "ChromaDB": 70 },
+    "data": { "Pandas": 90, "NumPy": 90, "Matplotlib": 80 },
+    "tools": { "FastAPI": 85, "Docker": 70, "Streamlit": 85, "Git/GitHub": 90, "Supabase": 75, "Vercel": 85 },
+};
+
 function MobileSkills() {
     return (
         <div className="flex flex-col gap-5 py-8 px-4">
-            {CLUSTERS.map((c, i) => (
-                <div key={c.id} className="pointer-events-none">
-                    <Card3D
-                        title={
-                            <span style={{ color: c.color }} className="font-mono text-lg font-bold">{c.coreName}</span>
-                        }
-                        description={
-                            <span className="text-white/50 text-xs">{c.desc}</span>
-                        }
-                        icon={getClusterIcon(c.id)}
-                        theme={i % 2 === 0 ? "orange" : "blue"}
-                        size="sm"
-                        variant="minimal"
-                        animated={true}
-                        disabled={true} // touch devices inherently disable tilt globally, but disabled=true enforces it directly
-                    >
-                        <div className="relative z-20 flex flex-wrap gap-2 pointer-events-none mt-2">
-                            {c.children.map(s => (
-                                <span key={s} className="text-xs font-mono px-3 py-1 rounded-full border border-white/10 bg-white/5 text-white/80">
-                                    {s}
-                                </span>
-                            ))}
-                        </div>
-                    </Card3D>
-                </div>
-            ))}
+            {CLUSTERS.map((c, i) => {
+                const proficiency = MOBILE_PROFICIENCY[c.id];
+                return (
+                    <div key={c.id} className="pointer-events-none">
+                        <Card3D
+                            title={
+                                <span style={{ color: c.color }} className="font-mono text-lg font-bold">{c.coreName}</span>
+                            }
+                            description={
+                                <span className="text-white/50 text-xs">{c.desc}</span>
+                            }
+                            icon={getClusterIcon(c.id)}
+                            theme={i % 2 === 0 ? "orange" : "blue"}
+                            size="sm"
+                            variant="minimal"
+                            animated={true}
+                            disabled={true}
+                        >
+                            <div className="relative z-20 flex flex-col gap-2 pointer-events-none mt-2 w-full">
+                                {proficiency ? (
+                                    Object.entries(proficiency).map(([skill, pct]) => (
+                                        <div key={skill} className="flex flex-col gap-0.5">
+                                            <div className="flex justify-between">
+                                                <span className="text-[0.65rem] font-mono text-white/80">{skill}</span>
+                                                <span className="text-[0.6rem] font-mono text-white/40">{pct}%</span>
+                                            </div>
+                                            <div className="w-full h-[3px] rounded-full bg-white/5 overflow-hidden">
+                                                <div
+                                                    className="h-full rounded-full"
+                                                    style={{ width: `${pct}%`, background: c.color, opacity: 0.7 }}
+                                                />
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="flex flex-wrap gap-2">
+                                        {c.children.map(s => (
+                                            <span key={s} className="text-xs font-mono px-3 py-1 rounded-full border border-white/10 bg-white/5 text-white/80">
+                                                {s}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </Card3D>
+                    </div>
+                );
+            })}
         </div>
     );
 }
