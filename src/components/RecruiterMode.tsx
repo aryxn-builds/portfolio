@@ -604,7 +604,7 @@ function PanelContent({
 
             {/* RESUME BUTTON */}
             <a
-                href="/resume/aryan-resume.pdf"
+                href="/resume/Aryan_Resume.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
                 download

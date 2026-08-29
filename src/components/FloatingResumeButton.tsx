@@ -35,7 +35,7 @@ export function FloatingResumeButton() {
             />
 
             <motion.a
-                href="/resume/aryan-resume.pdf"
+                href="/resume/Aryan_Resume.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
                 download

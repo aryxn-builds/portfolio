@@ -130,8 +130,8 @@ export default function ContactSection() {
 
   const handleDownload = () => {
     const a = document.createElement('a');
-    a.href = '/resume/aryan-resume.pdf';
-    a.download = 'aryan-resume.pdf';
+    a.href = '/resume/Aryan_Resume.pdf';
+    a.download = 'Aryan_Resume.pdf';
     a.click();
   };
 
